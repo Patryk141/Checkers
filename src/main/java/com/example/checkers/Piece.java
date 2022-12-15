@@ -1,28 +1,23 @@
 package com.example.checkers;
 
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-public class Piece extends StackPane {
-    private double X,Y;
+public class Piece extends Circle {
+    public boolean isHit(double x, double y){
+        return getBoundsInLocal().contains(x,y);
+    }
+
     PieceType type;
     public Piece(int x, int y, PieceType type) {
-        this.type = type;
-        Circle circle = new Circle();
-        circle.setRadius(CheckersApp.PieceSize*0.4);
-        relocate(x*CheckersApp.PieceSize+CheckersApp.PieceSize*0.1,y*CheckersApp.PieceSize+CheckersApp.PieceSize*0.1);
+        super(x*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5,y*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5,CheckersApp.PieceSize*0.4);
         if(type.equals(PieceType.WHITE)){
-            circle.setFill(Color.rgb(255,255,255));
+            setFill(Color.rgb(255,255,255));
         }
         else if(type.equals(PieceType.BLACK)){
-            circle.setFill(Color.rgb(1,1,1));
+            setFill(Color.rgb(1,1,1));
         }
-        setOnMousePressed(e -> {
-            X = e.getSceneX();
-            Y = e.getSceneY();
-            System.out.println(x + " " + y);
-        });
-        getChildren().add(circle);
+        setOnMouseDragged(new PieceEventHandler());
+        setOnMouseReleased(new PieceEventHandler());
     }
 }

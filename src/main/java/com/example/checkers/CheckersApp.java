@@ -7,8 +7,8 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class CheckersApp extends Application {
-    public static final int PieceSize = 100;
-    private final int Size = 7;
+    public static final int PieceSize = 80;
+    private final int Size = 10;
     private final Square[][] squares = new Square[Size][Size];
     private final Group squareGroup = new Group();
     private final Group pieceGroup = new Group();
@@ -34,6 +34,7 @@ public class CheckersApp extends Application {
         root.getChildren().addAll(squareGroup,pieceGroup);
         return root;
     }
+
     @Override
     public void start(Stage stage) {
         Scene scene = new Scene(CreateBoard());
