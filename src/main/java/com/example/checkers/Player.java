@@ -76,7 +76,7 @@ public class Player implements Runnable {
     }
   }
 
-  private void receiveInfoFromServer() {
+  private synchronized void receiveInfoFromServer() {
     try {
 
       player = Integer.parseInt(in.readLine()); // ustawienie
