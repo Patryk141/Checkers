@@ -18,9 +18,19 @@ public class PieceEventHandler implements EventHandler<MouseEvent> {
         x += dx;
         y += dy;
     }
-    private void moveCentre(MouseEvent e){
-        piece.setCenterX(piece.getCenterX() - piece.getCenterX()%CheckersApp.PieceSize + CheckersApp.PieceSize*0.5);
-        piece.setCenterY(piece.getCenterY() - piece.getCenterY()%CheckersApp.PieceSize + CheckersApp.PieceSize*0.5);
+    private void check_moveCentre(MouseEvent e){
+        int newX = (int) ((piece.getCenterX() - piece.getCenterX()%CheckersApp.PieceSize)/CheckersApp.PieceSize);
+        int newY = (int) ((piece.getCenterY() - piece.getCenterY()%CheckersApp.PieceSize)/CheckersApp.PieceSize);
+        if((newX + newY)%2 == 1){
+            piece.setCenterX(piece.getCenterX() - piece.getCenterX()%CheckersApp.PieceSize + CheckersApp.PieceSize*0.5);
+            piece.setCenterY(piece.getCenterY() - piece.getCenterY()%CheckersApp.PieceSize + CheckersApp.PieceSize*0.5);
+            piece.setOldX(piece.getCenterX() - piece.getCenterX()%CheckersApp.PieceSize + CheckersApp.PieceSize*0.5);
+            piece.setOldY(piece.getCenterY() - piece.getCenterY()%CheckersApp.PieceSize + CheckersApp.PieceSize*0.5);
+        }
+        else{
+            piece.setCenterX(piece.getOldX());
+            piece.setCenterY(piece.getOldY());
+        }
     }
     @Override
     public void handle(MouseEvent e){
@@ -29,7 +39,7 @@ public class PieceEventHandler implements EventHandler<MouseEvent> {
             move(e);
         }
         if(e.getEventType() == MouseEvent.MOUSE_RELEASED){
-            moveCentre(e);
+            check_moveCentre(e);
         }
     }
 }
