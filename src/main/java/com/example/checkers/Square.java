@@ -3,7 +3,19 @@ package com.example.checkers;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.io.Serializable;
+
 public class Square extends Rectangle {
+    private Piece piece = null;
+
+    public Piece getPiece() {
+        return piece;
+    }
+
+    public void setPiece(Piece piece) {
+        this.piece = piece;
+    }
+
     public Square(int x, int y, int type) {
         setWidth(CheckersApp.PieceSize);
         setHeight(CheckersApp.PieceSize);

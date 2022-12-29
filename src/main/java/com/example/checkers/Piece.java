@@ -19,27 +19,16 @@ public class Piece extends Circle implements Serializable {
     public double getOldX() {
         return oldX;
     }
-
     public int getX_pos() {
         return this.x_pos;
     }
-
-    public void setX_pos(int x_pos) {
-        this.x_pos = x_pos;
-    }
-
     public int getY_pos() {
         return this.y_pos;
     }
-
-    public void setY_pos(int y_pos) {
-        this.y_pos = y_pos;
-    }
-
     public void setOldX(double oldX) {
         this.oldX = oldX;
+        this.x_pos = (int) (oldX - CheckersApp.PieceSize*0.5)/CheckersApp.PieceSize;
     }
-
     public double getOldY() {
         return oldY;
     }
@@ -58,7 +47,9 @@ public class Piece extends Circle implements Serializable {
 
     public void setOldY(double oldY) {
         this.oldY = oldY;
+        this.y_pos = (int) (oldY - CheckersApp.PieceSize*0.5)/CheckersApp.PieceSize;
     }
+
 
     public boolean isHit(double x, double y) {
         return getBoundsInLocal().contains(x,y);
@@ -81,16 +72,14 @@ public class Piece extends Circle implements Serializable {
         this.oldX = x*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5;
         this.oldY = y*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5;
 
-
-
         if(type.equals(PieceType.WHITE)){
             this.paint = Color.WHITE;
-            color = new SerializableColor(0, 0, 0);
+            color = new SerializableColor(1, 1, 1);
             setFill(color.getFXColor());
         }
         else if(type.equals(PieceType.BLACK)){
             this.paint = Color.BLACK;
-            color = new SerializableColor(1, 1, 1);
+            color = new SerializableColor(0, 0, 0);
             setFill(color.getFXColor());
         }
 //        setOnMouseDragged(new PieceEventHandler(player, x, y));
