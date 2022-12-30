@@ -10,9 +10,9 @@ import java.io.*;
 public class CheckersServer {
 
   public static void main(String[] args) {
-    try(ServerSocket serverSocket = new ServerSocket(3000)) {
+    try(ServerSocket serverSocket = new ServerSocket(4000)) {
 
-      System.out.println("Server is listening on port 3000");
+      System.out.println("Server is listening on port 4000");
 
       while(true) {
         Socket firstClient = serverSocket.accept();
