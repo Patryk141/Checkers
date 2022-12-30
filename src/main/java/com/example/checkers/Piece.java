@@ -9,45 +9,46 @@ import java.io.*;
 
 public class Piece extends Circle implements Serializable {
 
-    private int x_pos, y_pos;
-    private double oldX, oldY, radius;
+    private int x_pos, y_pos; // position on board
+    private double oldX, oldY; // old coordinates
+    private double radius;
     PieceType type;
-    private Circle circle;
-    SerializableColor color;
-    private transient Paint paint;
+    private Paint paint;
 
-    public double getOldX() {
-        return oldX;
+    public Paint getPaint() {
+        return this.paint;
     }
+
+    public void setX_pos(int x_pos) {
+        this.x_pos = x_pos;
+    }
+
+    public void setY_pos(int y_pos) {
+        this.y_pos = y_pos;
+    }
+
     public int getX_pos() {
         return this.x_pos;
     }
     public int getY_pos() {
         return this.y_pos;
     }
+
+    public double getOldX() {
+        return oldX;
+    }
+
     public void setOldX(double oldX) {
         this.oldX = oldX;
-        this.x_pos = (int) (oldX - CheckersApp.PieceSize*0.5)/CheckersApp.PieceSize;
+//        this.x_pos = (int) (oldX - CheckersApp.PieceSize*0.5)/CheckersApp.PieceSize;
     }
     public double getOldY() {
         return oldY;
     }
 
-    public Paint getPaint() {
-        return this.paint;
-    }
-
-    public PieceType getType() {
-        return this.type;
-    }
-
-    public void setType(PieceType type) {
-        this.type = type;
-    }
-
     public void setOldY(double oldY) {
         this.oldY = oldY;
-        this.y_pos = (int) (oldY - CheckersApp.PieceSize*0.5)/CheckersApp.PieceSize;
+//        this.y_pos = (int) (oldY - CheckersApp.PieceSize*0.5)/CheckersApp.PieceSize;
     }
 
 
@@ -55,10 +56,6 @@ public class Piece extends Circle implements Serializable {
         return getBoundsInLocal().contains(x,y);
     }
 
-    public Circle createCircle() {
-        this.circle = new Circle(this.x_pos*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5, this.y_pos*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5,CheckersApp.PieceSize*0.4, this.getPaint());
-        return this.circle;
-    }
 
     public Piece(int x, int y, PieceType type) {
         super(x*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5, y*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5, CheckersApp.PieceSize*0.4);
@@ -74,35 +71,14 @@ public class Piece extends Circle implements Serializable {
 
         if(type.equals(PieceType.WHITE)){
             this.paint = Color.WHITE;
-            color = new SerializableColor(1, 1, 1);
-            setFill(color.getFXColor());
+            setFill(Color.rgb(255,255,255));
         }
         else if(type.equals(PieceType.BLACK)){
             this.paint = Color.BLACK;
-            color = new SerializableColor(0, 0, 0);
-            setFill(color.getFXColor());
+            setFill(Color.rgb(1,1,1));
         }
 //        setOnMouseDragged(new PieceEventHandler(player, x, y));
 //        setOnMouseReleased(new PieceEventHandler(player, x, y));
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
-
-        setCenterX(in.readDouble());
-        setCenterY(in.readDouble());
-        setRadius(in.readDouble());
-        setFill((Color)in.readObject());
-//        setType((PieceType) in.readObject());
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-//        out.defaultWriteObject();
-
-        out.writeDouble(this.circle.getCenterX());
-        out.writeDouble(this.circle.getCenterY());
-        out.writeDouble(this.circle.getRadius());
-//        out.writeObject(color.getFXColor());
     }
 
 
