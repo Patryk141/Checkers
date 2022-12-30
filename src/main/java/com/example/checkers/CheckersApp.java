@@ -51,16 +51,23 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
                 if((i+j)%2 != 0) {
                     if(Size-4 < j){
                         piece = new Piece(i,j,PieceType.BLACK);
-                        squares[i][j].setPiece(piece);
+                        squares[i][j].setPiece(piece); // ustawienie na kwadratach pionków
+                        if(player == PLAYER2) {
+                            piece.setOnMouseDragged(this);
+                            piece.setOnMouseReleased(this);
+                        }
                         pieceGroup.getChildren().add(piece);
                     }
                     else if(3 > j){
                         piece = new Piece(i,j,PieceType.WHITE);
                         squares[i][j].setPiece(piece);
+                        if(player == PLAYER1) {
+                            piece.setOnMouseDragged(this);
+                            piece.setOnMouseReleased(this);
+                        }
                         pieceGroup.getChildren().add(piece);
                     }
-                    piece.setOnMouseDragged(this);
-                    piece.setOnMouseReleased(this);
+
                 }
                 squareGroup.getChildren().add(squares[i][j]);
             }
@@ -94,7 +101,8 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
                 PrintWriter data_piece = new PrintWriter(socket.getOutputStream(), true);
                 int new_coordinate_x = (int) (e.getX() - e.getX()%PieceSize)/PieceSize;
                 int new_coordinate_y = (int) (e.getY() - e.getY()%PieceSize)/PieceSize;
-                if(move == ""){
+                if(move == "") {
+                    System.out.println("Sending data to server...");
                     data_piece.println(currPiece.getX_pos() + " " + currPiece.getY_pos() + " -> " + new_coordinate_x + " " + new_coordinate_y);
                 }
                 /*
@@ -139,23 +147,18 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
 
     }
 
-    private void checkMoveCentre(MouseEvent e, Piece piece, int x_pos, int y_pos) {
-
-    }
-
-    private void receiveMove() {
+    private void receiveMove() { // both player 1 and player 2 call this method after one of them makes move
         try {
-            // Odebranie z serwera informacji o ruchu białych
             // Odebranie stanu gry i zmienienie gui
             move = in.readLine();
             System.out.println(move);
-            if(move.contains("move")){
+
+            if(move.contains("valid")) {
                 change_position(move);
-                move = "";
-            }
-            else if(move.contains("valid")) {
-                change_position(move);
-                move_position(move);
+//                move_position(move);
+                if(move.contains("matted")) {
+                    removePiece(move);
+                }
                 move = "";
             }
             else if(move.contains("not")){
@@ -179,31 +182,44 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
         System.out.println(squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece());
         //squares[parseInt(date_xy[1])][parseInt(date_xy[2])].setPiece(mypiece);
     }
-    private void move_position(String move){
+//    private void move_position(String move){
+//        String[] date_xy = move.split(" ");
+//        Piece mypiece = squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece();
+//        mypiece.setCenterX(mypiece.getCenterX() - mypiece.getCenterX() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
+//        mypiece.setCenterY(mypiece.getCenterY() - mypiece.getCenterY() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
+//        squares[parseInt(date_xy[1])][parseInt(date_xy[2])].setPiece(null);
+//        mypiece.setOldX(mypiece.getCenterX() - mypiece.getCenterX() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
+//        mypiece.setOldY(mypiece.getCenterY() - mypiece.getCenterY() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
+//        squares[mypiece.getX_pos()][mypiece.getY_pos()].setPiece(mypiece);
+//    }
+    private void change_position(String move) {
         String[] date_xy = move.split(" ");
         Piece mypiece = squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece();
-        mypiece.setCenterX(mypiece.getCenterX() - mypiece.getCenterX() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-        mypiece.setCenterY(mypiece.getCenterY() - mypiece.getCenterY() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
         System.out.println(mypiece);
-        squares[parseInt(date_xy[1])][parseInt(date_xy[2])].setPiece(null);
-        mypiece.setOldX(mypiece.getCenterX() - mypiece.getCenterX() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-        mypiece.setOldY(mypiece.getCenterY() - mypiece.getCenterY() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-        squares[mypiece.getX_pos()][mypiece.getY_pos()].setPiece(mypiece);
-    }
-    private void change_position(String move){
-        String[] date_xy = move.split(" ");
-        Piece mypiece = squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece();
-        mypiece.setCenterX(mypiece.getCenterX() - mypiece.getCenterX() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-        mypiece.setCenterY(mypiece.getCenterY() - mypiece.getCenterY() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-        System.out.println(mypiece);
+//        mypiece.setCenterX(mypiece.getCenterX() - mypiece.getCenterX() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
+//        mypiece.setCenterY(mypiece.getCenterY() - mypiece.getCenterY() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
         mypiece.setCenterX(parseInt(date_xy[4])*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5);
         mypiece.setCenterY(parseInt(date_xy[5])*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5);
+        mypiece.setX_pos(parseInt(date_xy[4])); // setting new x_pos
+        mypiece.setY_pos(parseInt(date_xy[5])); // setting new y_pos
+        mypiece.setOldX(mypiece.getCenterX() - mypiece.getCenterX() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
+        mypiece.setOldY(mypiece.getCenterY() - mypiece.getCenterY() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
+        squares[parseInt(date_xy[1])][parseInt(date_xy[2])].setPiece(null); // setting old piece to null
+        squares[mypiece.getX_pos()][mypiece.getY_pos()].setPiece(mypiece); // setting new piece
+    }
+
+    private void removePiece(String move) {
+        String[] date_xy = move.split(" ");
+        Piece removedPiece = squares[(parseInt(date_xy[1]) + parseInt(date_xy[4])) / 2][(parseInt(date_xy[2]) + parseInt(date_xy[5])) / 2].getPiece();
+        squares[(parseInt(date_xy[1]) + parseInt(date_xy[4])) / 2][(parseInt(date_xy[2]) + parseInt(date_xy[5])) / 2].setPiece(null);
+        removedPiece.setVisible(false);
+        removedPiece = null;
     }
 
     public void listenSocket() {
         try {
             //System.out.println("Siema Eniu");
-            socket = new Socket("localhost", 3000);
+            socket = new Socket("localhost", 4000);
             // Inicjalizacja wysyłania do serwera
             OutputStream outStream = socket.getOutputStream();
             //outObj = new ObjectOutputStream(outStream);
@@ -236,18 +252,6 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
 
     public void initApp() {
         Stage stage = new Stage();
-
-//        Task playerTask = new Task<Player>() { // asynchroniczne zadania
-//            @Override
-//            protected Player call() throws Exception {
-//                player = new Player();
-//                return player;
-//            }
-//        };
-//        Thread th = new Thread(playerTask);
-//        th.setDaemon(true);
-//        th.start();
-
         Scene scene = new Scene(CreateBoard());
         stage.setTitle("Checkers");
         stage.setScene(scene);
@@ -256,9 +260,9 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
 
     @Override
     public void start(Stage primaryStage) throws Exception { // wywołana wtedy, kiedy aplikacja JavaFX startuje
-        initApp();
         listenSocket();
         receiveInfoFromServer();
+        initApp();
         startThread();
     }
 
@@ -273,7 +277,7 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
 
     public void playerMethod(int player) {
         while(true) {
-            synchronized(this) {
+            synchronized(this) { // this is monitor object
                 if (currentPlayer == player) {
                     try {
                         wait(5);
