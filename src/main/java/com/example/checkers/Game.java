@@ -46,33 +46,46 @@ public class Game extends CheckersApp implements Runnable {
     }
   }
 
-  public boolean check_move(int oldX, int oldY, int newX, int newY) {
+  private void updatePiece(Piece newPiece, int newX, int newY) {
+    newPiece.setCenterX(newX * CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
+    newPiece.setCenterY(newY * CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
+    newPiece.setX_pos(newX);
+    newPiece.setY_pos(newY);
+    newPiece.setOldX(newPiece.getCenterX() - newPiece.getCenterX() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
+    newPiece.setOldY(newPiece.getCenterY() - newPiece.getCenterY() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
+    squares[newX][newY].setPiece(newPiece);
+  }
+
+  private boolean checkNormalMove(int oldX, int oldY, int newX, int newY) {
     if((newX + newY) % 2 == 1) {
-      if(squares[newX][newY].getPiece() == null) {
-        Piece newPiece = squares[oldX][oldY].getPiece();
-        System.out.println(newPiece);
-        newPiece.setCenterX(newX*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5);
-        newPiece.setCenterY(newY*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5);
-        newPiece.setX_pos(newX);
-        newPiece.setY_pos(newY);
-        newPiece.setOldX(newPiece.getCenterX() - newPiece.getCenterX() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-        newPiece.setOldY(newPiece.getCenterY() - newPiece.getCenterY() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-//        newPiece.
-        squares[oldX][oldY].setPiece(null);
-        squares[newX][newY].setPiece(newPiece);
-        System.out.println(squares[newX][newY].getPiece());
-        return true;
+      if(Math.abs(oldX - newX) == 1 && Math.abs(oldY - newY) == 1) {
+        if (squares[newX][newY].getPiece() == null) {
+          Piece newPiece = squares[oldX][oldY].getPiece();
+          updatePiece(newPiece, newX, newY);
+          squares[oldX][oldY].setPiece(null);
+          System.out.println(squares[newX][newY].getPiece());
+          return true;
+        }
       }
     }
     return false;
   }
 
+
   public boolean checkIfMatted(int oldX, int oldY, int newX, int newY) {
-    if(((oldX + newX) % 2 == 0) && ((oldY + newY) % 2 == 0)) {
-      if(squares[(oldX + newX) / 2][(oldY + newY) / 2].getPiece().getPaint() != squares[newX][newY].getPiece().getPaint()) {
-        // zwrócenie prawdy do klienta i usunięcie pośredniczącego pionka z planszy
-        squares[(oldX + newX) / 2][(oldY + newY) / 2].setPiece(null);
-        return true;
+//    if(((oldX + newX) % 2 == 0) && ((oldY + newY) % 2 == 0))
+    int neighbourX = (oldX + newX) / 2;
+    int neighbourY = (oldY + newY) / 2;
+    if(Math.abs(oldX - newX) == 2 && Math.abs(oldY - newY) == 2) {
+      if(squares[neighbourX][neighbourY].getPiece() != null) {
+        if (squares[neighbourX][neighbourY].getPiece().getPaint() != squares[oldX][oldY].getPiece().getPaint()) {
+          // zwrócenie prawdy do klienta i usunięcie pośredniczącego pionka z planszy
+          Piece newPiece = squares[oldX][oldY].getPiece();
+          updatePiece(newPiece, newX, newY);
+          squares[oldX][oldY].setPiece(null);
+          squares[(oldX + newX) / 2][(oldY + newY) / 2].setPiece(null);
+          return true;
+        }
       }
     }
     return false;
@@ -98,7 +111,6 @@ public class Game extends CheckersApp implements Runnable {
         out_first.println("1");
         out_second.println("2");
 
-
         do {
           if (turn == SECOND) { // Ruch czarnych
             line = in_second.readLine();
@@ -107,10 +119,10 @@ public class Game extends CheckersApp implements Runnable {
             int oldY = parseInt(data_piece[1]);
             int newX = parseInt(data_piece[3]);
             int newY = parseInt(data_piece[4]);
-            boolean checkMove = check_move(oldX, oldY, newX, newY);
+            boolean checkNormalMove = checkNormalMove(oldX, oldY, newX, newY);
             boolean checkMat = checkIfMatted(oldX, oldY, newX, newY);
 
-            if(checkMove && checkMat) {
+            if(checkMat) {
               out_second.println("valid " + line + " matted");
               System.out.println("valid " + line + " matted");
               out_first.println("valid " + line + " matted");
@@ -119,8 +131,7 @@ public class Game extends CheckersApp implements Runnable {
               turn = FIRST;
             }
 
-            else if(checkMove && !checkMat){
-//              System.out.println(checkIfMatted(parseInt(data_piece[0]), parseInt(data_piece[1]), parseInt(data_piece[3]), parseInt(data_piece[4])));
+            else if(checkNormalMove){
               out_second.println("valid " + line);
               System.out.println("valid " + line);
               out_first.println("valid " + line);
@@ -135,30 +146,24 @@ public class Game extends CheckersApp implements Runnable {
 
           }
           if (turn == FIRST) { // Ruch białych
-            //System.out.println("FIRST");
             line = in_first.readLine();
             String[] data_piece = line.split(" ");
             int oldX = parseInt(data_piece[0]);
             int oldY = parseInt(data_piece[1]);
             int newX = parseInt(data_piece[3]);
             int newY = parseInt(data_piece[4]);
-            //PrintWriter out1 = new PrintWriter(firstPlayer.getOutputStream(), true);
-//            System.out.println(( check_move(oldX, oldY, newX, newY) && !checkIfMatted(oldX, oldY, newX, newY) ));
 
-            boolean checkMove = check_move(oldX, oldY, newX, newY);
+            boolean checkNormalMove = checkNormalMove(oldX, oldY, newX, newY);
             boolean checkMat = checkIfMatted(oldX, oldY, newX, newY);
 
-
-            if(checkMove && checkMat) {
-              System.out.println("Jestem tu w 1 ifie");
+            if(checkMat) {
               out_first.println("valid " + line + " matted");
               System.out.println("valid " + line + " matted");
               out_second.println("valid " + line + " matted");
               System.out.println("move " + line + " matted");
               turn = SECOND;
             }
-            else if(checkMove && !checkMat) {
-//              System.out.println(checkIfMatted(parseInt(data_piece[0]), parseInt(data_piece[1]), parseInt(data_piece[3]), parseInt(data_piece[4])));
+            else if(checkNormalMove) {
               out_first.println("valid " + line);
               System.out.println("valid " + line);
               out_second.println("valid " + line);
@@ -171,7 +176,6 @@ public class Game extends CheckersApp implements Runnable {
               out_second.println("not " + line);
               System.out.println("not " + line);
             }
-            //String response = check_moveCentre(piece);
           }
 
         } while (!gameEnded);
