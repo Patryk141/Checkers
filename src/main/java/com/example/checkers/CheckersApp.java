@@ -26,8 +26,6 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
 
     Socket socket = null;
     PrintWriter out = null;
-    ObjectOutputStream outObj = null;
-    ObjectInputStream inObj = null;
     BufferedReader in = null;
     private int player;
     public final static int PLAYER1 = 1;
@@ -102,36 +100,8 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
                 int new_coordinate_x = (int) (e.getX() - e.getX()%PieceSize)/PieceSize;
                 int new_coordinate_y = (int) (e.getY() - e.getY()%PieceSize)/PieceSize;
                 if(move == "") {
-                    System.out.println("Sending data to server...");
                     data_piece.println(currPiece.getX_pos() + " " + currPiece.getY_pos() + " -> " + new_coordinate_x + " " + new_coordinate_y);
                 }
-                /*
-                System.out.println(move + "!!!");
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(move.equals("valid")) {
-                            squares[currPiece.getX_pos()][currPiece.getY_pos()].setPiece(null);
-                            currPiece.setCenterX(currPiece.getCenterX() - currPiece.getCenterX() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-                            currPiece.setCenterY(currPiece.getCenterY() - currPiece.getCenterY() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-                            currPiece.setOldX(currPiece.getCenterX() - currPiece.getCenterX() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-                            currPiece.setOldY(currPiece.getCenterY() - currPiece.getCenterY() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-                            squares[currPiece.getX_pos()][currPiece.getY_pos()].setPiece(currPiece);
-                        } //else if (move.contains("move")) {
-                            // move 1 2 -> 3 4
-                            //System.out.println("Robi movseee");
-                            //String[] date_xy = move.split(" ");
-                            //squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece().setCenterX(parseInt(date_xy[4])*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5);
-                            //squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece().setCenterY(parseInt(date_xy[5])*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5);
-                        //}
-                        else {
-                            currPiece.setCenterX(currPiece.getOldX());
-                            currPiece.setCenterY(currPiece.getOldY());
-                        }
-                    }
-                });
-
-                 */
 
             } catch(IOException ex) {
                 System.out.println("blad");
@@ -143,10 +113,6 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
     }
 
 
-    private void sendMove(MouseEvent e, Piece piece, int x_pos, int y_pos) {
-
-    }
-
     private void receiveMove() { // both player 1 and player 2 call this method after one of them makes move
         try {
             // Odebranie stanu gry i zmienienie gui
@@ -155,7 +121,6 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
 
             if(move.contains("valid")) {
                 change_position(move);
-//                move_position(move);
                 if(move.contains("matted")) {
                     removePiece(move);
                 }
@@ -163,7 +128,6 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
             }
             else if(move.contains("not")){
                 back_position(move);
-
                 move = "";
             }
             move="";
@@ -182,22 +146,10 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
         System.out.println(squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece());
         //squares[parseInt(date_xy[1])][parseInt(date_xy[2])].setPiece(mypiece);
     }
-//    private void move_position(String move){
-//        String[] date_xy = move.split(" ");
-//        Piece mypiece = squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece();
-//        mypiece.setCenterX(mypiece.getCenterX() - mypiece.getCenterX() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-//        mypiece.setCenterY(mypiece.getCenterY() - mypiece.getCenterY() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-//        squares[parseInt(date_xy[1])][parseInt(date_xy[2])].setPiece(null);
-//        mypiece.setOldX(mypiece.getCenterX() - mypiece.getCenterX() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-//        mypiece.setOldY(mypiece.getCenterY() - mypiece.getCenterY() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-//        squares[mypiece.getX_pos()][mypiece.getY_pos()].setPiece(mypiece);
-//    }
+
     private void change_position(String move) {
         String[] date_xy = move.split(" ");
         Piece mypiece = squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece();
-        System.out.println(mypiece);
-//        mypiece.setCenterX(mypiece.getCenterX() - mypiece.getCenterX() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-//        mypiece.setCenterY(mypiece.getCenterY() - mypiece.getCenterY() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
         mypiece.setCenterX(parseInt(date_xy[4])*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5);
         mypiece.setCenterY(parseInt(date_xy[5])*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5);
         mypiece.setX_pos(parseInt(date_xy[4])); // setting new x_pos
@@ -218,15 +170,12 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
 
     public void listenSocket() {
         try {
-            //System.out.println("Siema Eniu");
             socket = new Socket("localhost", 4000);
             // Inicjalizacja wysyłania do serwera
             OutputStream outStream = socket.getOutputStream();
-            //outObj = new ObjectOutputStream(outStream);
             out = new PrintWriter(outStream, true);
             // Inicjalizacja odbierania od serwera
             InputStream inStream = socket.getInputStream();
-            //inObj = new ObjectInputStream(inStream);
             in = new BufferedReader(new InputStreamReader(inStream));
         }
         catch(IOException ex) {
