@@ -1,6 +1,7 @@
 package com.example.checkers;
 
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 
 import java.io.*;
 import java.net.Socket;
@@ -46,6 +47,11 @@ public class Game extends CheckersApp implements Runnable {
     }
   }
 
+  // if piece can be mat
+  private void mandatoryMove() {
+
+  }
+
   private void updatePiece(Piece newPiece, int newX, int newY) {
     newPiece.setCenterX(newX * CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
     newPiece.setCenterY(newY * CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
@@ -58,14 +64,19 @@ public class Game extends CheckersApp implements Runnable {
 
   private boolean checkNormalMove(int oldX, int oldY, int newX, int newY) {
     if((newX + newY) % 2 == 1) {
-      if(Math.abs(oldX - newX) == 1 && Math.abs(oldY - newY) == 1) {
-        if (squares[newX][newY].getPiece() == null) {
-          Piece newPiece = squares[oldX][oldY].getPiece();
-          updatePiece(newPiece, newX, newY);
-          squares[oldX][oldY].setPiece(null);
-          System.out.println(squares[newX][newY].getPiece());
-          return true;
-        }
+      Piece newPiece = squares[oldX][oldY].getPiece();
+      if(Math.abs(oldX - newX) == 1 && squares[newX][newY].getPiece() == null) {
+        // validation for not moving the piece back
+          if((newY - oldY) == 1 && newPiece.getPaint() == Color.WHITE) {
+            updatePiece(newPiece, newX, newY);
+            squares[oldX][oldY].setPiece(null);
+            return true;
+          }
+          else if((oldY - newY) == 1 && newPiece.getPaint() == Color.BLACK) {
+            updatePiece(newPiece, newX, newY);
+            squares[oldX][oldY].setPiece(null);
+            return true;
+          }
       }
     }
     return false;
@@ -73,6 +84,7 @@ public class Game extends CheckersApp implements Runnable {
 
 
   public boolean checkIfMatted(int oldX, int oldY, int newX, int newY) {
+    // Pieces can either mat other by moving up or down
 //    if(((oldX + newX) % 2 == 0) && ((oldY + newY) % 2 == 0))
     int neighbourX = (oldX + newX) / 2;
     int neighbourY = (oldY + newY) / 2;
