@@ -21,10 +21,10 @@ public class Square extends Rectangle {
         setHeight(CheckersApp.PieceSize);
         relocate(x*CheckersApp.PieceSize,y*CheckersApp.PieceSize);
         if(type == 0){
-            setFill(Color.rgb(255,255,255));
+            setFill(Color.rgb(227,197,140));
         }
         else{
-            setFill(Color.rgb(80,100,60));
+            setFill(Color.rgb(149,95,34));
         }
     }
 }

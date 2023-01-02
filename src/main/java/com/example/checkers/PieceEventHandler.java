@@ -46,16 +46,16 @@ public class PieceEventHandler implements EventHandler<MouseEvent> {
 
   @Override
   public void handle(MouseEvent e) {
-        piece = (Piece)e.getSource();
-        if(e.getEventType() == MouseEvent.MOUSE_DRAGGED){
+    piece = (Piece)e.getSource();
+    if(e.getEventType() == MouseEvent.MOUSE_DRAGGED){
 //          System.out.println(player);
-          player.sendMove(e, piece, x_pos, y_pos);
+      player.sendMove(e, piece, x_pos, y_pos);
 //      move(e);
-        }
-        if(e.getEventType() == MouseEvent.MOUSE_RELEASED){
-          System.out.println("Siema jestem z PieceHandler");
+    }
+    if(e.getEventType() == MouseEvent.MOUSE_RELEASED){
+      System.out.println("Siema jestem z PieceHandler");
 //          check_moveCentre(e);
-        }
+    }
 //    piece = (Piece)e.getSource();
 //    if(e.getEventType() == MouseEvent.MOUSE_DRAGGED){
 ////      Platform.runLater(new Runnable() {

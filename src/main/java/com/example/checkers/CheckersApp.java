@@ -1,6 +1,5 @@
 package com.example.checkers;
 
-import java.lang.Object;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -26,8 +25,6 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
 
     Socket socket = null;
     PrintWriter out = null;
-    ObjectOutputStream outObj = null;
-    ObjectInputStream inObj = null;
     BufferedReader in = null;
     private int player;
     public final static int PLAYER1 = 1;
@@ -37,8 +34,9 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
     private static int currentPlayer = PLAYER1; // ustawienie obecnego gracza na gracza, który zaczyna białymi
 
     private static int showing = ACTIVE;
-    String move = "";
-
+    private boolean yourTurn = false;
+    private String move = "";
+    private int new_coordinate_x, new_coordinate_y, old_coordinate_x, old_coordinate_y;
     private Pane CreateBoard() {
 
         Pane root = new Pane();
@@ -81,58 +79,33 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
     public void handle(MouseEvent e) {
 
         Piece currPiece = (Piece)e.getSource();
-        if(e.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+        if (e.getEventType() == MouseEvent.MOUSE_DRAGGED) {
             double dx = e.getX() - currPiece.getCenterX();
             double dy = e.getY() - currPiece.getCenterY();
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    if(currPiece.isHit(currPiece.getCenterX(), currPiece.getCenterY())) {
+                    if (currPiece.isHit(currPiece.getCenterX(), currPiece.getCenterY())) {
                         currPiece.setCenterX(currPiece.getCenterX() + dx);
                         currPiece.setCenterY(currPiece.getCenterY() + dy);
                     }
-//                    piece.setCenterX(piece.getCenterX() + dx);
-//                    piece.setCenterY(piece.getCenterY() + dy);
                 }
             });
         }
-        if(e.getEventType() == MouseEvent.MOUSE_RELEASED) {
+        if (e.getEventType() == MouseEvent.MOUSE_RELEASED) {
             try {
-                PrintWriter data_piece = new PrintWriter(socket.getOutputStream(), true);
-                int new_coordinate_x = (int) (e.getX() - e.getX()%PieceSize)/PieceSize;
-                int new_coordinate_y = (int) (e.getY() - e.getY()%PieceSize)/PieceSize;
-                if(move == "") {
+                PrintWriter dataPiece = new PrintWriter(socket.getOutputStream(), true);
+                new_coordinate_x = (int) (e.getX() - e.getX()%PieceSize)/PieceSize;
+                new_coordinate_y = (int) (e.getY() - e.getY()%PieceSize)/PieceSize;
+                if (yourTurn == true) {
                     System.out.println("Sending data to server...");
-                    data_piece.println(currPiece.getX_pos() + " " + currPiece.getY_pos() + " -> " + new_coordinate_x + " " + new_coordinate_y);
+                    System.out.println(currPiece.getX_pos() + " " + currPiece.getY_pos() + " -> " + new_coordinate_x + " " + new_coordinate_y);
+                    dataPiece.println(currPiece.getX_pos() + " " + currPiece.getY_pos() + " -> " + new_coordinate_x + " " + new_coordinate_y);
                 }
-                /*
-                System.out.println(move + "!!!");
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(move.equals("valid")) {
-                            squares[currPiece.getX_pos()][currPiece.getY_pos()].setPiece(null);
-                            currPiece.setCenterX(currPiece.getCenterX() - currPiece.getCenterX() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-                            currPiece.setCenterY(currPiece.getCenterY() - currPiece.getCenterY() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-                            currPiece.setOldX(currPiece.getCenterX() - currPiece.getCenterX() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-                            currPiece.setOldY(currPiece.getCenterY() - currPiece.getCenterY() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-                            squares[currPiece.getX_pos()][currPiece.getY_pos()].setPiece(currPiece);
-                        } //else if (move.contains("move")) {
-                            // move 1 2 -> 3 4
-                            //System.out.println("Robi movseee");
-                            //String[] date_xy = move.split(" ");
-                            //squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece().setCenterX(parseInt(date_xy[4])*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5);
-                            //squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece().setCenterY(parseInt(date_xy[5])*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5);
-                        //}
-                        else {
-                            currPiece.setCenterX(currPiece.getOldX());
-                            currPiece.setCenterY(currPiece.getOldY());
-                        }
-                    }
-                });
-
-                 */
-
+                else {
+                    currPiece.setCenterX(currPiece.getOldX());
+                    currPiece.setCenterY(currPiece.getOldY());
+                }
             } catch(IOException ex) {
                 System.out.println("blad");
                 ex.printStackTrace();
@@ -152,52 +125,55 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
             // Odebranie stanu gry i zmienienie gui
             move = in.readLine();
             System.out.println(move);
-
-            if(move.contains("valid")) {
-                change_position(move);
-//                move_position(move);
-                if(move.contains("matted")) {
-                    removePiece(move);
+            if (move.contains("remove")) {
+                remove(move);
+            }
+            if (move.contains("valid")) {
+                if (move.contains("promotion")) {
+                    promotionPiece(move);
                 }
-                move = "";
+                changePosition(move);
+                if (move.contains("matted")) {
+                    removePiece(move);
+                    if (move.contains("turn")) {
+                        if (yourTurn == true) {
+                            yourTurn = false;
+                        }
+                        else {
+                            yourTurn = true;
+                        }
+                    }
+//                    old_coordinate_x = new_coordinate_x;
+//                    old_coordinate_y = new_coordinate_y;
+                }
+                if (yourTurn == true) {
+                    yourTurn = false;
+                }
+                else {
+                    yourTurn = true;
+                }
             }
-            else if(move.contains("not")){
-                back_position(move);
-
-                move = "";
+            else if (move.contains("not")){
+                backPosition(move);
             }
-            move="";
         } catch(IOException e) {
             System.out.println("Read failed");
             System.exit(1);
         }
     }
-    private void back_position(String move){
+    private void promotionPiece(String move) {
+        String[] date_xy = move.split(" ");
+        squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece().setKing();
+    }
+    private void backPosition(String move){
         String[] date_xy = move.split(" ");
         Piece mypiece = squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece();
-        System.out.println(date_xy[1] + " " + date_xy[2]);
-        System.out.println(mypiece);
         mypiece.setCenterX(mypiece.getOldX());
         mypiece.setCenterY(mypiece.getOldY());
-        System.out.println(squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece());
-        //squares[parseInt(date_xy[1])][parseInt(date_xy[2])].setPiece(mypiece);
     }
-//    private void move_position(String move){
-//        String[] date_xy = move.split(" ");
-//        Piece mypiece = squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece();
-//        mypiece.setCenterX(mypiece.getCenterX() - mypiece.getCenterX() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-//        mypiece.setCenterY(mypiece.getCenterY() - mypiece.getCenterY() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-//        squares[parseInt(date_xy[1])][parseInt(date_xy[2])].setPiece(null);
-//        mypiece.setOldX(mypiece.getCenterX() - mypiece.getCenterX() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-//        mypiece.setOldY(mypiece.getCenterY() - mypiece.getCenterY() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-//        squares[mypiece.getX_pos()][mypiece.getY_pos()].setPiece(mypiece);
-//    }
-    private void change_position(String move) {
+    private void changePosition(String move) {
         String[] date_xy = move.split(" ");
         Piece mypiece = squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece();
-        System.out.println(mypiece);
-//        mypiece.setCenterX(mypiece.getCenterX() - mypiece.getCenterX() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
-//        mypiece.setCenterY(mypiece.getCenterY() - mypiece.getCenterY() % CheckersApp.PieceSize + CheckersApp.PieceSize * 0.5);
         mypiece.setCenterX(parseInt(date_xy[4])*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5);
         mypiece.setCenterY(parseInt(date_xy[5])*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5);
         mypiece.setX_pos(parseInt(date_xy[4])); // setting new x_pos
@@ -207,26 +183,52 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
         squares[parseInt(date_xy[1])][parseInt(date_xy[2])].setPiece(null); // setting old piece to null
         squares[mypiece.getX_pos()][mypiece.getY_pos()].setPiece(mypiece); // setting new piece
     }
-
     private void removePiece(String move) {
         String[] date_xy = move.split(" ");
-        Piece removedPiece = squares[(parseInt(date_xy[1]) + parseInt(date_xy[4])) / 2][(parseInt(date_xy[2]) + parseInt(date_xy[5])) / 2].getPiece();
-        squares[(parseInt(date_xy[1]) + parseInt(date_xy[4])) / 2][(parseInt(date_xy[2]) + parseInt(date_xy[5])) / 2].setPiece(null);
-        removedPiece.setVisible(false);
-        removedPiece = null;
+//        Piece removedPiece = squares[(parseInt(date_xy[1]) + parseInt(date_xy[4])) / 2][(parseInt(date_xy[2]) + parseInt(date_xy[5])) / 2].getPiece();
+//        squares[(parseInt(date_xy[1]) + parseInt(date_xy[4])) / 2][(parseInt(date_xy[2]) + parseInt(date_xy[5])) / 2].setPiece(null);
+//        removedPiece.setVisible(false);
+        int oldX = parseInt(date_xy[1]);
+        int oldY = parseInt(date_xy[2]);
+        int newX = parseInt(date_xy[4]);
+        int newY = parseInt(date_xy[5]);
+        while (oldX != newX) {
+            if (oldX < newX) {
+                oldX = oldX + 1;
+            } else {
+                oldX = oldX - 1;
+            }
+            if (oldY < newY) {
+                oldY = oldY + 1;
+            } else {
+                oldY = oldY - 1;
+            }
+            if (squares[oldX][oldY].getPiece() != null && oldX != newX) {
+                squares[oldX][oldY].getPiece().setVisible(false);
+                squares[oldX][oldY].setPiece(null);
+            }
+        }
+    }
+    private void remove(String move) {
+        String[] date_xy = move.split(" \\( ");
+        int x, y;
+        for (int i=1 ; i<date_xy.length ; i++) {
+            String[] piecexy = date_xy[i].split(" ");
+            x = parseInt(piecexy[0]);
+            y = parseInt(piecexy[1]);
+            squares[x][y].getPiece().setVisible(false);
+            squares[x][y].setPiece(null);
+        }
     }
 
     public void listenSocket() {
         try {
-            //System.out.println("Siema Eniu");
             socket = new Socket("localhost", 4000);
             // Inicjalizacja wysyłania do serwera
             OutputStream outStream = socket.getOutputStream();
-            //outObj = new ObjectOutputStream(outStream);
             out = new PrintWriter(outStream, true);
             // Inicjalizacja odbierania od serwera
             InputStream inStream = socket.getInputStream();
-            //inObj = new ObjectInputStream(inStream);
             in = new BufferedReader(new InputStreamReader(inStream));
         }
         catch(IOException ex) {
@@ -239,6 +241,9 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
         try {
             player = parseInt(in.readLine()); // ustawienie
             System.out.println("Witam z tej strony Player " + player);
+            if(player == 1){
+                yourTurn = true;
+            }
         } catch (IOException e) {
             System.out.println("Read Failed");
             System.exit(1);
@@ -253,7 +258,7 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
     public void initApp() {
         Stage stage = new Stage();
         Scene scene = new Scene(CreateBoard());
-        stage.setTitle("Checkers");
+        stage.setTitle("Player " + player);
         stage.setScene(scene);
         stage.show();
     }
@@ -286,11 +291,7 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
                         System.out.println(e);
                     }
                 }
-                //if(showing == ACTIVE) {
-                    receiveMove();
-                //    showing = NONACTIVE;
-                //}
-                //notifyAll();
+                receiveMove();
             }
         }
     }

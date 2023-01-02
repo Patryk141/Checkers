@@ -1,6 +1,5 @@
 package com.example.checkers;
 
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
@@ -12,13 +11,33 @@ public class Piece extends Circle implements Serializable {
     private int x_pos, y_pos; // position on board
     private double oldX, oldY; // old coordinates
     private double radius;
-    PieceType type;
-    private Paint paint;
+    private PieceType type;
+    private boolean king = false;
+    //private Paint paint;
 
-    public Paint getPaint() {
-        return this.paint;
+    //public Paint getPaint() {
+    //    return this.paint;
+    //}
+
+    public boolean isKing() {
+        return king;
     }
 
+    public void setKing() {
+        this.king = true;
+        if (type == PieceType.WHITE) {
+            setFill(Color.rgb(121,139,203));
+        } else {
+            setFill(Color.rgb(96,34,40));
+        }
+    }
+
+    public PieceType getType() {
+        return this.type;
+    }
+    public void setType(PieceType type) {
+        this.type = type;
+    }
     public void setX_pos(int x_pos) {
         this.x_pos = x_pos;
     }
@@ -70,11 +89,11 @@ public class Piece extends Circle implements Serializable {
         this.oldY = y*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5;
 
         if(type.equals(PieceType.WHITE)){
-            this.paint = Color.WHITE;
+            //this.paint = Color.WHITE;
             setFill(Color.rgb(255,255,255));
         }
         else if(type.equals(PieceType.BLACK)){
-            this.paint = Color.BLACK;
+            //this.paint = Color.BLACK;
             setFill(Color.rgb(1,1,1));
         }
 //        setOnMouseDragged(new PieceEventHandler(player, x, y));
