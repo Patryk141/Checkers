@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -17,11 +18,10 @@ import static java.lang.Integer.parseInt;
 public class CheckersApp extends Application implements Runnable, EventHandler<MouseEvent> {
 
     public static final int PieceSize = 80;
-    //    private Player player;
-    public static final int Size = 8;
+    public static int Size;
     int i, j;
     Piece piece;
-    public static final Square[][] squares = new Square[Size][Size];
+    public static Square[][] squares;
 
     Socket socket = null;
     PrintWriter out = null;
@@ -33,13 +33,19 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
     public static final int NONACTIVE = 1;
     private static int currentPlayer = PLAYER1; // ustawienie obecnego gracza na gracza, który zaczyna białymi
 
+    private String WINNER = "";
     private static int showing = ACTIVE;
     private boolean yourTurn = false;
     private String move = "";
     private int new_coordinate_x, new_coordinate_y, old_coordinate_x, old_coordinate_y;
-    private Pane CreateBoard() {
 
+    public CheckersApp() {
+
+    }
+
+    private Pane CreateBoard() {
         Pane root = new Pane();
+        squares = new Square[Size][Size];
         Group squareGroup = new Group();
         Group pieceGroup = new Group();
         root.setPrefSize(Size*PieceSize,Size*PieceSize);
@@ -98,7 +104,6 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
                 new_coordinate_x = (int) (e.getX() - e.getX()%PieceSize)/PieceSize;
                 new_coordinate_y = (int) (e.getY() - e.getY()%PieceSize)/PieceSize;
                 if (yourTurn == true) {
-                    System.out.println("Sending data to server...");
                     System.out.println(currPiece.getX_pos() + " " + currPiece.getY_pos() + " -> " + new_coordinate_x + " " + new_coordinate_y);
                     dataPiece.println(currPiece.getX_pos() + " " + currPiece.getY_pos() + " -> " + new_coordinate_x + " " + new_coordinate_y);
                 }
@@ -107,7 +112,7 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
                     currPiece.setCenterY(currPiece.getOldY());
                 }
             } catch(IOException ex) {
-                System.out.println("blad");
+                System.out.println("error");
                 ex.printStackTrace();
             }
             showing = ACTIVE;
@@ -115,9 +120,18 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
         }
     }
 
+    private void communicate() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("End of Game");
+                alert.setHeaderText(null);
 
-    private void sendMove(MouseEvent e, Piece piece, int x_pos, int y_pos) {
-
+                alert.setContentText("The winner is " + WINNER);
+                alert.showAndWait();
+            }
+        });
     }
 
     private void receiveMove() { // both player 1 and player 2 call this method after one of them makes move
@@ -129,6 +143,14 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
                 remove(move);
             }
             if (move.contains("valid")) {
+                if(move.contains("WHITE WINS")) {
+                    WINNER = "White";
+                    communicate();
+                }
+                if(move.contains("BLACK WINS")) {
+                    WINNER = "Black";
+                    communicate();
+                }
                 if (move.contains("promotion")) {
                     promotionPiece(move);
                 }
@@ -237,9 +259,10 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
         }
     }
 
-    private void receiveInfoFromServer() {
+    public void receiveInfoFromServer() {
         try {
             player = parseInt(in.readLine()); // ustawienie
+            System.out.println("ELOOO");
             System.out.println("Witam z tej strony Player " + player);
             if(player == 1){
                 yourTurn = true;
@@ -250,25 +273,55 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
         }
     }
 
-    private void startThread() {
+    public void startThread() {
         Thread gTh = new Thread(this);
         gTh.start();
     }
 
-    public void initApp() {
-        Stage stage = new Stage();
-        Scene scene = new Scene(CreateBoard());
-        stage.setTitle("Player " + player);
-        stage.setScene(scene);
-        stage.show();
+    private void initBoard(int size) {
+        Size = size;
+        Game.size = size;
+        try {
+            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+            writer.println("" + size);
+        } catch(IOException err) {
+            System.out.println(err);
+        }
+        System.out.println(Game.size);
     }
+
+    public void initApp(int SIZE, Stage stage) {
+        listenSocket();
+        receiveInfoFromServer();
+        initBoard(SIZE);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                stage.close();
+                Stage stage = new Stage();
+                Scene scene = new Scene(CreateBoard());
+                stage.setTitle("Player " + player);
+                stage.setScene(scene);
+                stage.show();
+            }
+        });
+        startThread();
+    }
+
 
     @Override
     public void start(Stage primaryStage) throws Exception { // wywołana wtedy, kiedy aplikacja JavaFX startuje
-        listenSocket();
-        receiveInfoFromServer();
-        initApp();
-        startThread();
+//        CheckersMenu checkersMenu = new CheckersMenu();
+//        checkersMenu.initMenu();
+//        listenSocket();
+//        receiveInfoFromServer();
+//        Platform.runLater(new Runnable() {
+//            @Override
+//            public void run() {
+//                initApp();
+//            }
+//        });
+//        startThread();
     }
 
     public static void main(String[] args) {
