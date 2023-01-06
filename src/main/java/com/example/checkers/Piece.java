@@ -1,5 +1,6 @@
 package com.example.checkers;
 
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
@@ -25,10 +26,16 @@ public class Piece extends Circle implements Serializable {
 
     public void setKing() {
         this.king = true;
-        if (type == PieceType.WHITE) {
-            setFill(Color.rgb(121,139,203));
+        if(type == PieceType.WHITE) {
+            setRadius(CheckersApp.PieceSize * 0.3);
+            setFill(Color.rgb(1,1,1));
+            setStroke(Color.rgb(255,255,255));
+            setStrokeWidth(15);
         } else {
-            setFill(Color.rgb(96,34,40));
+            setRadius(CheckersApp.PieceSize * 0.3);
+            setFill(Color.rgb(255,255,255));
+            setStroke(Color.rgb(1,1,1));
+            setStrokeWidth(15);
         }
     }
 
@@ -59,7 +66,6 @@ public class Piece extends Circle implements Serializable {
 
     public void setOldX(double oldX) {
         this.oldX = oldX;
-//        this.x_pos = (int) (oldX - CheckersApp.PieceSize*0.5)/CheckersApp.PieceSize;
     }
     public double getOldY() {
         return oldY;
@@ -67,14 +73,11 @@ public class Piece extends Circle implements Serializable {
 
     public void setOldY(double oldY) {
         this.oldY = oldY;
-//        this.y_pos = (int) (oldY - CheckersApp.PieceSize*0.5)/CheckersApp.PieceSize;
     }
-
 
     public boolean isHit(double x, double y) {
         return getBoundsInLocal().contains(x,y);
     }
-
 
     public Piece(int x, int y, PieceType type) {
         super(x*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5, y*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5, CheckersApp.PieceSize*0.4);
