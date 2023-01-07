@@ -1,6 +1,5 @@
 package com.example.checkers;
 
-import javafx.scene.input.MouseEvent;
 
 import java.io.*;
 import java.net.Socket;
@@ -13,16 +12,17 @@ public class Game extends CheckersApp implements Runnable {
   private Socket firstPlayer;
   private Socket secondPlayer;
   private boolean gameEnded = false;
-  public static int size;
-  private final static int FIRST=1; // Białe
-  private final static int SECOND=2; // Czarne
-  private static int turn=FIRST;
+  private static int Size;
+  private final static int FIRST = 1; // Białe
+  private final static int SECOND = 2; // Czarne
+  private static int turn = FIRST;
   boolean checkMoves = false;
   private boolean checkMat = false;
   private boolean lock = true;
   private String line, availablePiece, obligatoryPiece;
   private Square[][] squares;
-  int blackPieces, whitePieces = 0;
+  private boolean Hitting = false;
+  private int blackPieces, whitePieces = 0;
 
   public Game(Socket firstPlayer, Socket secondPlayer) {
     this.firstPlayer = firstPlayer;
@@ -35,13 +35,12 @@ public class Game extends CheckersApp implements Runnable {
 
   public void createBoard() {
 
-    squares = new Square[size][size];
-    System.out.println(size);
-    for (i=0 ; i<size ; i++) {
-      for (j=0 ; j<size ; j++) {
+    squares = new Square[Size][Size];
+    for (i=0 ; i< Size; i++) {
+      for (j=0 ; j< Size; j++) {
         squares[i][j] = new Square(i,j,(i+j)%2);
         if ((i+j)%2 != 0) {
-          if (size-4 < j) {
+          if (Size -4 < j) {
             piece = new Piece(i,j,PieceType.BLACK);
             blackPieces++;
             squares[i][j].setPiece(piece);
@@ -66,7 +65,7 @@ public class Game extends CheckersApp implements Runnable {
     if (!piece.isKing()) { // piece is not a king
       if (pos_X > 0) { // check moves on one diagonal
         tmp_X = pos_X - 1;
-        if (type == PieceType.WHITE && pos_Y != size - 1) {
+        if (type == PieceType.WHITE && pos_Y != Size - 1) {
           tmp_Y = pos_Y + 1;
           if (squares[tmp_X][tmp_Y].getPiece() == null) {
             moves = moves + " ( " + tmp_X + " " + tmp_Y + " )";
@@ -78,9 +77,9 @@ public class Game extends CheckersApp implements Runnable {
           }
         }
       }
-      if (pos_X < size - 1) { // check moves on second diagonal
+      if (pos_X < Size - 1) { // check moves on second diagonal
         tmp_X = pos_X + 1;
-        if (type == PieceType.WHITE && pos_Y != size - 1) {
+        if (type == PieceType.WHITE && pos_Y != Size - 1) {
           tmp_Y = pos_Y + 1;
           if (squares[tmp_X][tmp_Y].getPiece() == null) {
             moves = moves + " ( " + tmp_X + " " + tmp_Y + " )";
@@ -101,7 +100,7 @@ public class Game extends CheckersApp implements Runnable {
           }
         }
       }
-      if (pos_X - 2 >= 0 && pos_Y + 2 < size) {
+      if (pos_X - 2 >= 0 && pos_Y + 2 < Size) {
         if (squares[pos_X - 1][pos_Y + 1].getPiece() != null) { // left bottom
           if (squares[pos_X - 2][pos_Y + 2].getPiece() == null && !squares[pos_X - 1][pos_Y + 1].getPiece().getType().equals(type)) {
             tmp_X = pos_X - 2;
@@ -110,7 +109,7 @@ public class Game extends CheckersApp implements Runnable {
           }
         }
       }
-      if (pos_X + 2 < size && pos_Y - 2 >= 0) {
+      if (pos_X + 2 < Size && pos_Y - 2 >= 0) {
         if (squares[pos_X + 1][pos_Y - 1].getPiece() != null) { // right up
           if (squares[pos_X + 2][pos_Y - 2].getPiece() == null && !squares[pos_X + 1][pos_Y - 1].getPiece().getType().equals(type)) {
             tmp_X = pos_X + 2;
@@ -119,7 +118,7 @@ public class Game extends CheckersApp implements Runnable {
           }
         }
       }
-      if (pos_X + 2 < size && pos_Y + 2 < size) {
+      if (pos_X + 2 < Size && pos_Y + 2 < Size) {
         if (squares[pos_X + 1][pos_Y + 1].getPiece() != null) { // right bottom
           if (squares[pos_X + 2][pos_Y + 2].getPiece() == null && !squares[pos_X + 1][pos_Y + 1].getPiece().getType().equals(type)) {
             tmp_X = pos_X + 2;
@@ -155,19 +154,19 @@ public class Game extends CheckersApp implements Runnable {
 
       tmp_X = pos_X + 1;
       tmp_Y = pos_Y - 1;
-      while (tmp_X < size && tmp_Y >= 0) {
+      while (tmp_X < Size && tmp_Y >= 0) {
         if (squares[tmp_X][tmp_Y].getPiece() == null) {
           moves = moves + " ( " + tmp_X + " " + tmp_Y + " )";
         } else if (squares[tmp_X][tmp_Y].getPiece().getType() == type) {
-          tmp_X = size;
+          tmp_X = Size;
         } else {
           tmp_X++;
           tmp_Y--;
-          while (tmp_X < size && tmp_Y >= 0) {
+          while (tmp_X < Size && tmp_Y >= 0) {
             if (squares[tmp_X][tmp_Y].getPiece() == null) {
               movesKill = movesKill + " kill ( " + tmp_X + " " + tmp_Y + " )";
             } else {
-              tmp_X = size;
+              tmp_X = Size;
             }
             tmp_X++;
             tmp_Y--;
@@ -179,7 +178,7 @@ public class Game extends CheckersApp implements Runnable {
 
       tmp_X = pos_X - 1;
       tmp_Y = pos_Y + 1;
-      while (tmp_X >= 0 && tmp_Y < size) {
+      while (tmp_X >= 0 && tmp_Y < Size) {
         if (squares[tmp_X][tmp_Y].getPiece() == null) {
           moves = moves + " ( " + tmp_X + " " + tmp_Y + " )";
         } else if (squares[tmp_X][tmp_Y].getPiece().getType() == type) {
@@ -187,7 +186,7 @@ public class Game extends CheckersApp implements Runnable {
         } else {
           tmp_X--;
           tmp_Y++;
-          while (tmp_X >= 0 && tmp_Y < size) {
+          while (tmp_X >= 0 && tmp_Y < Size) {
             if (squares[tmp_X][tmp_Y].getPiece() == null) {
               movesKill = movesKill + " kill ( " + tmp_X + " " + tmp_Y + " )";
             } else {
@@ -203,19 +202,19 @@ public class Game extends CheckersApp implements Runnable {
 
       tmp_X = pos_X + 1;
       tmp_Y = pos_Y + 1;
-      while (tmp_X < size && tmp_Y < size) {
+      while (tmp_X < Size && tmp_Y < Size) {
         if (squares[tmp_X][tmp_Y].getPiece() == null) {
           moves = moves + " ( " + tmp_X + " " + tmp_Y + " )";
         } else if (squares[tmp_X][tmp_Y].getPiece().getType() == type) {
-          tmp_X = size;
+          tmp_X = Size;
         } else {
           tmp_X++;
           tmp_Y++;
-          while (tmp_X < size && tmp_Y < size) {
+          while (tmp_X < Size && tmp_Y < Size) {
             if (squares[tmp_X][tmp_Y].getPiece() == null) {
               movesKill = movesKill + " kill ( " + tmp_X + " " + tmp_Y + " )";
             } else {
-              tmp_X = size;
+              tmp_X = Size;
             }
             tmp_X++;
             tmp_Y++;
@@ -234,6 +233,8 @@ public class Game extends CheckersApp implements Runnable {
   public void availablePiece() {
     Piece newPiece;
     PieceType type;
+    int matCounter = 0;
+    int maxMatCounter = 0;
     if (turn == FIRST) {
       type = PieceType.WHITE;
     } else {
@@ -241,16 +242,23 @@ public class Game extends CheckersApp implements Runnable {
     }
     availablePiece = "";
     obligatoryPiece = "";
-    for (int i=0 ; i< size ; i++) {
-      for (int j=0 ; j< size ; j++) {
+    for (int i = 0; i < Size; i++) {
+      for (int j = 0; j < Size; j++) {
         newPiece = squares[i][j].getPiece();
         if (newPiece != null) {
           if (newPiece.getType() == type) {
             if (availableMoves(newPiece) != "") {
               availablePiece = availablePiece + " ( " + i + " " + j + " )";
             }
-            if(availableMoves(newPiece).contains("kill")) {
-              obligatoryPiece = obligatoryPiece + " ( " + i + " " + j + " )";
+            if(availableMoves(newPiece).contains("kill")) {//Warcaby klasyczne
+              matCounter =  howManyMat(newPiece, 0, -1, -1);
+              System.out.println("Ilosc bic: " + matCounter);
+              if (matCounter > maxMatCounter) {
+                obligatoryPiece = " ( " + i + " " + j + " )";
+                maxMatCounter = matCounter;
+              } else if (matCounter == maxMatCounter) {
+                obligatoryPiece = obligatoryPiece + " ( " + i + " " + j + " )";
+              }//Koniec
             }
           }
         }
@@ -260,6 +268,30 @@ public class Game extends CheckersApp implements Runnable {
       obligatoryPiece = availablePiece;
     }
   }
+  public int howManyMat(Piece piece, int counter, int oldX, int oldY) {//Warcaby klasyczne
+    counter++;
+    int x = piece.getX_pos();
+    int y = piece.getY_pos();
+    String moves = availableMoves(piece);
+    String[] move = moves.split("kill ");
+    PieceType pieceType = piece.getType();
+//    System.out.println("--> " + moves);
+    for (int k = 1 ; k < move.length ; k++) {
+      String[] coordinates = move[k].split(" ");
+      if (parseInt(coordinates[1]) != oldX || parseInt(coordinates[2]) != oldY) {
+        Piece tmppiece = new Piece(parseInt(coordinates[1]), parseInt(coordinates[2]), pieceType);
+        if (piece.isKing()) {
+          tmppiece.setKing();
+        }
+        if (availableMoves(tmppiece).contains("kill")) {
+          if (counter < howManyMat(tmppiece, counter, x, y)) {
+            counter = howManyMat(tmppiece, counter, x, y);
+          }
+        }
+      }
+    }
+    return counter;
+  }//Koniec
 
   public boolean checkIfMatted(int oldX, int oldY, int newX, int newY) {
     while (oldX != newX) {
@@ -337,29 +369,22 @@ public class Game extends CheckersApp implements Runnable {
   }
 
   private String checkWinner() {
-    System.out.println(blackPieces);
-    System.out.println(whitePieces);
-
     if(blackPieces == 0 && whitePieces > 0) {
       gameEnded = true;
       return "WHITE WINS";
     }
-
     if(checkBlockedPieces(PieceType.WHITE)) {
       gameEnded = true;
       return "BLACK WINS BY BLOCKING ALL WHITES";
     }
-
     if(checkBlockedPieces(PieceType.BLACK)) {
       gameEnded = true;
       return "WHITE WINS BY BLOCKING ALL BlACKS";
     }
-
     if(whitePieces == 0 && blackPieces > 0) {
       gameEnded = true;
       return "BLACK WINS";
     }
-
     return "NO WINNER";
   }
 
@@ -392,11 +417,11 @@ public class Game extends CheckersApp implements Runnable {
             }
             tmpPiece = squares[newX][newY].getPiece();
             checkMat = checkIfMatted(oldX, oldY, newX, newY);
-            if (turn == 2 && newY == 0) {
+            if (turn == 2 && newY == 0 && !availableMoves(tmpPiece).contains("kill")) {//Warcaby klasyczne
               promotion(newX, newY);
               line = line + " promotion";
             }
-            if(turn == 1 && newY == size - 1) {
+            if(turn == 1 && newY == Size - 1 && !availableMoves(tmpPiece).contains("kill")) {//Koniec
               line = line + " promotion";
               promotion(newX, newY);
             }
@@ -431,37 +456,37 @@ public class Game extends CheckersApp implements Runnable {
             out_second.println("not " + line);
           }
         } else {
-          checkMoves = checkMove(oldX, oldY, newX, newY);
-          if (checkMoves) {
-            String[] date_xy = obligatoryPiece.split(" \\( ");
-            int x, y;
-            for (int i=1 ; i<date_xy.length ; i++) {
-              String[] piecexy = date_xy[i].split(" ");
-              x = parseInt(piecexy[0]);
-              y = parseInt(piecexy[1]);
-              if(squares[x][y].getPiece().getType() == PieceType.WHITE) {
-                whitePieces--;
-              }
-              if(squares[x][y].getPiece().getType() == PieceType.BLACK) {
-                blackPieces--;
-              }
-              if((blackPieces == 0 && whitePieces > 0) || checkBlockedPieces(PieceType.BLACK)) {
-                gameEnded = true;
-                line = line + " WHITE WINS";
-              } else if((whitePieces == 0 && blackPieces > 0) || checkBlockedPieces(PieceType.WHITE)) {
-                gameEnded = true;
-                line = line + " BLACK WINS";
-              }
-              squares[x][y].getPiece().setVisible(false);
-              squares[x][y].setPiece(null);
-            }
-            out_first.println("valid " + line + " remove" + obligatoryPiece);
-            out_second.println("valid " + line + " remove" + obligatoryPiece);
-            turn = nextTurn;
-          } else {
+//          checkMoves = checkMove(oldX, oldY, newX, newY);
+//          if (checkMoves) {
+//            String[] date_xy = obligatoryPiece.split(" \\( ");
+//            int x, y;
+//            for (int i=1 ; i<date_xy.length ; i++) {
+//              String[] piecexy = date_xy[i].split(" ");
+//              x = parseInt(piecexy[0]);
+//              y = parseInt(piecexy[1]);
+//              if(squares[x][y].getPiece().getType() == PieceType.WHITE) {
+//                whitePieces--;
+//              }
+//              if(squares[x][y].getPiece().getType() == PieceType.BLACK) {
+//                blackPieces--;
+//              }
+//              if((blackPieces == 0 && whitePieces > 0) || checkBlockedPieces(PieceType.BLACK)) {
+//                gameEnded = true;
+//                line = line + " WHITE WINS";
+//              } else if((whitePieces == 0 && blackPieces > 0) || checkBlockedPieces(PieceType.WHITE)) {
+//                gameEnded = true;
+//                line = line + " BLACK WINS";
+//              }
+//              squares[x][y].getPiece().setVisible(false);
+//              squares[x][y].setPiece(null);
+//            }
+//            out_first.println("valid " + line + " remove" + obligatoryPiece);
+//            out_second.println("valid " + line + " remove" + obligatoryPiece);
+//            turn = nextTurn;
+//          } else {
             out_first.println("not " + line);
             out_second.println("not " + line);
-          }
+//          }
         }
       } else {
         out_first.println("not " + line);
@@ -491,9 +516,16 @@ public class Game extends CheckersApp implements Runnable {
         out_first.println("1");
         out_second.println("2");
 
-        String msg2 = in_first.readLine();
-        msg2 = in_second.readLine();
-        size = parseInt(msg2);
+        String sizeFromPlayer1 = in_first.readLine();
+        String sizeFromPlayer2 = in_second.readLine();
+        System.out.println(sizeFromPlayer1);
+        if (!sizeFromPlayer1.equals(sizeFromPlayer2)) {
+          throw new Exception("Wrong game type");
+        } else {
+          String[] info = sizeFromPlayer1.split(" ");
+          Size = parseInt(info[0]);
+          Hitting = Boolean.parseBoolean(info[1]);
+        }
         createBoard();
         do {
           if (turn == SECOND) { // Ruch czarnych
@@ -514,6 +546,8 @@ public class Game extends CheckersApp implements Runnable {
 
       } catch (IOException ex) {
         System.err.println("ex");
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
   }
 }

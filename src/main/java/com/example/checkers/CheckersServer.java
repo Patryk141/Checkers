@@ -1,19 +1,14 @@
 package com.example.checkers;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.io.*;
-
 
 public class CheckersServer {
-
   public static void main(String[] args) {
     try (ServerSocket serverSocket = new ServerSocket(4000)) {
 
       System.out.println("Server is listening on port 4000");
-
       while(true) {
         Socket firstClient = serverSocket.accept();
         System.out.println("First client connected!");

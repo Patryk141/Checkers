@@ -14,12 +14,6 @@ public class Piece extends Circle implements Serializable {
     private double radius;
     private PieceType type;
     private boolean king = false;
-    //private Paint paint;
-
-    //public Paint getPaint() {
-    //    return this.paint;
-    //}
-
     public boolean isKing() {
         return king;
     }
@@ -41,9 +35,6 @@ public class Piece extends Circle implements Serializable {
 
     public PieceType getType() {
         return this.type;
-    }
-    public void setType(PieceType type) {
-        this.type = type;
     }
     public void setX_pos(int x_pos) {
         this.x_pos = x_pos;
@@ -92,15 +83,11 @@ public class Piece extends Circle implements Serializable {
         this.oldY = y*CheckersApp.PieceSize+CheckersApp.PieceSize*0.5;
 
         if(type.equals(PieceType.WHITE)){
-            //this.paint = Color.WHITE;
             setFill(Color.rgb(255,255,255));
         }
         else if(type.equals(PieceType.BLACK)){
-            //this.paint = Color.BLACK;
             setFill(Color.rgb(1,1,1));
         }
-//        setOnMouseDragged(new PieceEventHandler(player, x, y));
-//        setOnMouseReleased(new PieceEventHandler(player, x, y));
     }
 
 
