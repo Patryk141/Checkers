@@ -29,23 +29,18 @@ public class Game extends CheckersApp implements Runnable {
     this.secondPlayer = secondPlayer;
   }
 
-  public boolean isWinner() {
-    return false;
-  }
-
   public void createBoard() {
-
     squares = new Square[size][size];
-    System.out.println(size);
-    for (i=0 ; i<size ; i++) {
-      for (j=0 ; j<size ; j++) {
+
+    for (int i=0 ; i<size ; i++) {
+      for (int j=0 ; j<size ; j++) {
         squares[i][j] = new Square(i,j,(i+j)%2);
         if ((i+j)%2 != 0) {
-          if (size-4 < j) {
+          if ( (size / 2) < j) {
             piece = new Piece(i,j,PieceType.BLACK);
             blackPieces++;
             squares[i][j].setPiece(piece);
-          } else if (3 > j) {
+          } else if (3 +((size - 8) / 2) > j) {
             piece = new Piece(i,j,PieceType.WHITE);
             whitePieces++;
             squares[i][j].setPiece(piece);
@@ -494,6 +489,7 @@ public class Game extends CheckersApp implements Runnable {
         String msg2 = in_first.readLine();
         msg2 = in_second.readLine();
         size = parseInt(msg2);
+        System.out.println(size);
         createBoard();
         do {
           if (turn == SECOND) { // Ruch czarnych
