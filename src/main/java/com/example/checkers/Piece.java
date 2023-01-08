@@ -14,11 +14,6 @@ public class Piece extends Circle implements Serializable {
     private double radius;
     private PieceType type;
     private boolean king = false;
-    //private Paint paint;
-
-    //public Paint getPaint() {
-    //    return this.paint;
-    //}
 
     public boolean isKing() {
         return king;

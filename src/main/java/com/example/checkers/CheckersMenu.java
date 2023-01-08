@@ -27,41 +27,10 @@ public class CheckersMenu extends Application {
     HBox root = new HBox();
     root.setPrefSize(600, 600);
 
-    Button game1 = new Button("Warcaby klasyczne");
-    Button game2 = new Button("Warcaby polskie");
-    Button game3 = new Button("Warcaby rosyjskie");
+    Button game1 = new Button("Warcaby rosyjskie"); // całe zaimplementowane
+    Button game2 = new Button("Warcaby klasyczne");
+    Button game3 = new Button("Warcaby polskie");
 
-    EventHandler<MouseEvent> classicHandler = new EventHandler<MouseEvent>() {
-      @Override
-      public void handle(MouseEvent mouseEvent) {
-        app = new CheckersApp();
-        Thread th = new Thread(()-> {
-          try {
-            board = new ClassicBoard();
-            app.initApp(board, newStage);
-          } catch(Exception e) {
-            System.out.println(e);
-          }
-        });
-        th.start();
-      }
-    };
-
-    EventHandler<MouseEvent> polishHandler = new EventHandler<MouseEvent>() {
-      @Override
-      public void handle(MouseEvent mouseEvent) {
-        app = new CheckersApp();
-        Thread th = new Thread(()-> {
-          try {
-            board = new PolishBoard();
-            app.initApp(board, newStage);
-          } catch(Exception e) {
-            System.out.println(e);
-          }
-        });
-        th.start();
-      }
-    };
     EventHandler<MouseEvent> russianHandler = new EventHandler<MouseEvent>() {
       @Override
       public void handle(MouseEvent mouseEvent) {
@@ -78,9 +47,40 @@ public class CheckersMenu extends Application {
       }
     };
 
-    game1.addEventFilter(MouseEvent.MOUSE_CLICKED, classicHandler);
-    game2.addEventFilter(MouseEvent.MOUSE_CLICKED, polishHandler);
-    game3.addEventFilter(MouseEvent.MOUSE_CLICKED, russianHandler);
+    EventHandler<MouseEvent> classicHandler = new EventHandler<MouseEvent>() {
+      @Override
+      public void handle(MouseEvent mouseEvent) {
+        app = new CheckersApp();
+        Thread th = new Thread(()-> {
+          try {
+            board = new ClassicBoard();
+            app.initApp(board, newStage);
+          } catch(Exception e) {
+            System.out.println(e);
+          }
+        });
+        th.start();
+      }
+    };
+    EventHandler<MouseEvent> polishHandler = new EventHandler<MouseEvent>() {
+      @Override
+      public void handle(MouseEvent mouseEvent) {
+        app = new CheckersApp();
+        Thread th = new Thread(()-> {
+          try {
+            board = new PolishBoard();
+            app.initApp(board, newStage);
+          } catch(Exception e) {
+            System.out.println(e);
+          }
+        });
+        th.start();
+      }
+    };
+
+    game1.addEventFilter(MouseEvent.MOUSE_CLICKED, russianHandler); // git
+    game2.addEventFilter(MouseEvent.MOUSE_CLICKED, classicHandler);
+    game3.addEventFilter(MouseEvent.MOUSE_CLICKED, polishHandler);
 
     root.getChildren().addAll(game1, game2, game3);
     root.setAlignment(Pos.CENTER);

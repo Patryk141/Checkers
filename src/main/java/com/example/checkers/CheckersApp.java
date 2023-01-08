@@ -29,18 +29,13 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
     public final static int PLAYER1 = 1;
     public final static int PLAYER2 = 2;
     public static int ACTIVE = 0;
-    public static final int NONACTIVE = 1;
     private static int currentPlayer = PLAYER1; // ustawienie obecnego gracza na gracza, który zaczyna białymi
 
     private String WINNER = "";
     private static int showing = ACTIVE;
     private boolean yourTurn = false;
     private String move = "";
-    private int new_coordinate_x, new_coordinate_y, old_coordinate_x, old_coordinate_y;
-
-    public CheckersApp() {
-
-    }
+    private int new_coordinate_x, new_coordinate_y;
 
     @Override
     public void handle(MouseEvent e) {
@@ -87,7 +82,6 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("End of Game");
                 alert.setHeaderText(null);
-
                 alert.setContentText("The winner is " + WINNER);
                 alert.showAndWait();
             }
@@ -125,8 +119,6 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
                             yourTurn = true;
                         }
                     }
-//                    old_coordinate_x = new_coordinate_x;
-//                    old_coordinate_y = new_coordinate_y;
                 }
                 if (yourTurn == true) {
                     yourTurn = false;
@@ -252,7 +244,7 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
         }
     }
 
-    public void initApp(CheckersBoard board, Stage stage) {
+    public void initApp(CheckersBoard board, Stage stage) { // Abstract Factory
         listenSocket();
         receiveInfoFromServer();
         board.sendMsgToServer(socket);
