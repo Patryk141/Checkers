@@ -53,10 +53,9 @@ public class RussianBoard implements CheckersBoard {
 
   @Override
   public void sendMsgToServer(Socket socket) {
-    Game.size = Size;
     try {
       PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-      writer.println("" + Size);
+      writer.println(Size + " " + "Russian");
     } catch(IOException err) {
       System.out.println(err);
     }
