@@ -20,8 +20,9 @@ public class Game extends CheckersApp implements Runnable {
   private boolean checkMoves = false;
   private boolean checkMat = false;
   private boolean lock = true;
-  private String line, gameType;
+  private String line;
   private Square[][] squares;
+  public String gameType;
   public GameRules rules = null;
   int blackPieces, whitePieces = 0;
 
@@ -59,7 +60,7 @@ public class Game extends CheckersApp implements Runnable {
     rules.setNumberOfPieces(blackPieces, whitePieces);
   }
 
-  private void generateResponse(BufferedReader in, PrintWriter out_first, PrintWriter out_second, int nextTurn) {
+  public void generateResponse(BufferedReader in, PrintWriter out_first, PrintWriter out_second, int nextTurn) {
     try {
       line = in.readLine();
       System.out.println(line);
@@ -69,7 +70,6 @@ public class Game extends CheckersApp implements Runnable {
       int newX = parseInt(data_piece[3]);
       int newY = parseInt(data_piece[4]);
       boolean classicCheck;
-
       String chosenPiece =  "( " + oldX + " " + oldY + " )";
       if (lock) {
         rules.availablePiece(turn, size, squares);

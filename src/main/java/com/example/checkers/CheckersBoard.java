@@ -6,7 +6,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public interface CheckersBoard {
-  public static final int PieceSize = 80;
+  public static final int PieceSize = 50;
 
   Pane createBoard();
   void sendMsgToServer(Socket socket);

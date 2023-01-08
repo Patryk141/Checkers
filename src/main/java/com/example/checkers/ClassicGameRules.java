@@ -266,7 +266,7 @@ public class ClassicGameRules implements GameRules {
             }
             if(availableMoves(newPiece).contains("kill")) {
               matCounter =  howManyMat(newPiece, 0, -1, -1);
-              System.out.println("Ilosc bic: " + matCounter);
+//              System.out.println("Ilosc bic: " + matCounter);
               if (matCounter > maxMatCounter) {
                 obligatoryPiece = " ( " + i + " " + j + " )";
                 maxMatCounter = matCounter;
@@ -283,15 +283,15 @@ public class ClassicGameRules implements GameRules {
     }
   }
 
-  public int howManyMat(Piece piece, int counter, int oldX, int oldY) {//Warcaby klasyczne
-    counter++;
+  public int howManyMat(Piece piece, int counter, int oldX, int oldY) {
     int x = piece.getX_pos();
     int y = piece.getY_pos();
+    int count = 0;
     String moves = availableMoves(piece);
     String[] move = moves.split("kill ");
     PieceType pieceType = piece.getType();
-//    System.out.println("--> " + moves);
     for (int k = 1 ; k < move.length ; k++) {
+      count = 0;
       String[] coordinates = move[k].split(" ");
       if (parseInt(coordinates[1]) != oldX || parseInt(coordinates[2]) != oldY) {
         Piece tmppiece = new Piece(parseInt(coordinates[1]), parseInt(coordinates[2]), pieceType);
@@ -299,14 +299,16 @@ public class ClassicGameRules implements GameRules {
           tmppiece.setKing();
         }
         if (availableMoves(tmppiece).contains("kill")) {
-          if (counter < howManyMat(tmppiece, counter, x, y)) {
-            counter = howManyMat(tmppiece, counter, x, y);
-          }
+          count = howManyMat(tmppiece, count, x, y);
+        }
+        count++;
+        if (count > counter) {
+          counter = count;
         }
       }
     }
     return counter;
-  }//Koniec
+  }
 
   @Override
   public boolean checkIfMatted(int oldX, int oldY, int newX, int newY) {
