@@ -20,7 +20,7 @@ public class PolishBoard implements CheckersBoard {
   @Override
   public Pane createBoard() {
     Pane root = new Pane();
-    squares = new Square[Size][Size];
+    squares = new Square[getSize()][getSize()];
     Group squareGroup = new Group();
     Group pieceGroup = new Group();
     root.setPrefSize(Size*PieceSize,Size*PieceSize);
@@ -55,7 +55,7 @@ public class PolishBoard implements CheckersBoard {
   public void sendMsgToServer(Socket socket) {
     try {
       PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-      writer.println(Size + " " + "Classic");
+      writer.println(getSize() + " " + "Classic");
     } catch(IOException err) {
       System.out.println(err);
     }
@@ -80,4 +80,11 @@ public class PolishBoard implements CheckersBoard {
   public int getPieceSize() {
     return PieceSize;
   }
+
+  @Override
+  public int getSize() {
+    return Size;
+  }
+
+
 }

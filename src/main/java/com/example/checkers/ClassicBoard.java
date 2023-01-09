@@ -80,4 +80,9 @@ public class ClassicBoard implements CheckersBoard {
   public int getPieceSize() {
     return PieceSize;
   }
+
+  @Override
+  public int getSize() {
+    return Size;
+  }
 }

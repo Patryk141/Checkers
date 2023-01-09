@@ -20,7 +20,7 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
 
     public static int PieceSize;
     Piece piece;
-    public Square[][] squares;
+    public static Square[][] squares;
 
     Socket socket = null;
     PrintWriter out = null;
@@ -36,6 +36,14 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
     private boolean yourTurn = false;
     private String move = "";
     private int new_coordinate_x, new_coordinate_y;
+
+    public int getPlayer() {
+        return player;
+    }
+
+    public Square[][] getSquares() {
+        return squares;
+    }
 
     @Override
     public void handle(MouseEvent e) {
@@ -139,13 +147,13 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
         String[] date_xy = move.split(" ");
         squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece().setKing();
     }
-    private void backPosition(String move){
+    protected void backPosition(String move){
         String[] date_xy = move.split(" ");
         Piece mypiece = squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece();
         mypiece.setCenterX(mypiece.getOldX());
         mypiece.setCenterY(mypiece.getOldY());
     }
-    private void changePosition(String move) {
+    protected void changePosition(String move) {
         String[] date_xy = move.split(" ");
         Piece mypiece = squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece();
         mypiece.setCenterX(parseInt(date_xy[4])*PieceSize+PieceSize*0.5);
@@ -157,7 +165,7 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
         squares[parseInt(date_xy[1])][parseInt(date_xy[2])].setPiece(null); // setting old piece to null
         squares[mypiece.getX_pos()][mypiece.getY_pos()].setPiece(mypiece); // setting new piece
     }
-    private void removePiece(String move) {
+    protected void removePiece(String move) {
         String[] date_xy = move.split(" ");
 
         int oldX = parseInt(date_xy[1]);

@@ -14,5 +14,6 @@ public interface CheckersBoard {
   ArrayList<Piece> getBlackPieces();
   ArrayList<Piece> getWhitePieces();
   int getPieceSize();
+  int getSize();
 
 }

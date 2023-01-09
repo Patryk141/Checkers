@@ -7,7 +7,7 @@ import javafx.scene.shape.Circle;
 
 import java.io.*;
 
-public class Piece extends Circle implements Serializable {
+public class Piece extends Circle {
 
     private int x_pos, y_pos; // position on board
     private double oldX, oldY; // old coordinates
