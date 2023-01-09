@@ -16,6 +16,10 @@ import java.util.ArrayList;
 
 import static java.lang.Integer.parseInt;
 
+/**
+ * Class for creating the checkers board, connecting to server, handling server response and updating gui
+ * @author Bartłomiej Puchała Patryk Piskorski
+ */
 public class CheckersApp extends Application implements Runnable, EventHandler<MouseEvent> {
 
     public static int PieceSize;
@@ -45,6 +49,10 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
         return squares;
     }
 
+    /**
+     * Method for handling the events on pieces, changing gui based on these events and sending information about the move to server
+     * @param e - MouseEvent object
+     */
     @Override
     public void handle(MouseEvent e) {
         Piece currPiece = (Piece)e.getSource();
@@ -83,6 +91,9 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
         }
     }
 
+    /**
+     * Method for creating alert notification after some player wins the game
+     */
     private void communicate() {
         Platform.runLater(new Runnable() {
             @Override
@@ -96,6 +107,9 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
         });
     }
 
+    /**
+     * Method for handling the response from the server and calling appropriate functions which changes gui
+     */
     private void receiveMove() { // both player 1 and player 2 call this method after one of them makes move
         try {
             // Odebranie stanu gry i zmienienie gui
@@ -143,16 +157,31 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
             System.exit(1);
         }
     }
+
+    /**
+     * Method for creating the king(changing piece to king)
+     * @param move - message returned by the server
+     */
     private void promotionPiece(String move) {
         String[] date_xy = move.split(" ");
         squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece().setKing();
     }
+
+    /**
+     * Method for returning the piece back(setting old coordinates) if the move is not valid
+     * @param move - message returned by the server
+     */
     protected void backPosition(String move){
         String[] date_xy = move.split(" ");
         Piece mypiece = squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece();
         mypiece.setCenterX(mypiece.getOldX());
         mypiece.setCenterY(mypiece.getOldY());
     }
+
+    /**
+     * Method for changing the coordinates of the piece if the move was valid and updating the squares object
+     * @param move - message returned by the server
+     */
     protected void changePosition(String move) {
         String[] date_xy = move.split(" ");
         Piece mypiece = squares[parseInt(date_xy[1])][parseInt(date_xy[2])].getPiece();
@@ -165,6 +194,11 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
         squares[parseInt(date_xy[1])][parseInt(date_xy[2])].setPiece(null); // setting old piece to null
         squares[mypiece.getX_pos()][mypiece.getY_pos()].setPiece(mypiece); // setting new piece
     }
+
+    /**
+     * Method for removing the matted piece from the gui if the other piece matted
+     * @param move - message returned by the server
+     */
     protected void removePiece(String move) {
         String[] date_xy = move.split(" ");
 
@@ -189,6 +223,11 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
             }
         }
     }
+
+    /**
+     * Method for removing the piece from the board
+     * @param move - message returned by the server
+     */
     private void remove(String move) {
         String[] date_xy = move.split(" \\( ");
         int x, y;
@@ -201,6 +240,9 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
         }
     }
 
+    /**
+     * Method for creating the connection to the server(socket obj) and initializing streams
+     */
     public void listenSocket() {
         try {
             socket = new Socket("localhost", 4000);
@@ -217,10 +259,12 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
         }
     }
 
+    /**
+     * Method for receiving info about the player number from the server
+     */
     public void receiveInfoFromServer() {
         try {
             player = parseInt(in.readLine()); // ustawienie
-            System.out.println("Witam z tej strony Player " + player);
             if(player == 1){
                 yourTurn = true;
             }
@@ -230,20 +274,26 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
         }
     }
 
+    /**
+     * Method for starting the thread
+     */
     public void startThread() {
         Thread gTh = new Thread(this);
         gTh.start();
     }
 
+    /**
+     * Method for adding handlers to whitePieces for player1 and blackPieces to player2
+     * @param blackPieces - array list of blackPieces
+     * @param whitePieces - array list of whitePieces
+     */
     private void initHandlers(ArrayList<Piece> blackPieces, ArrayList<Piece> whitePieces) {
-
         for(Piece blackPiece: blackPieces) {
             if(player == PLAYER2) {
                 blackPiece.setOnMouseDragged(this);
                 blackPiece.setOnMouseReleased(this);
             }
         }
-
         for(Piece whitePiece: whitePieces) {
             if(player == PLAYER1) {
                 whitePiece.setOnMouseDragged(this);
@@ -252,11 +302,17 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
         }
     }
 
+    /**
+     * Method is calling the methods for creating gui(board, pieces, squares), connecting to server itp.
+     * Method is called from the CheckersMenu class
+     * @param board - type of board specific to each
+     * @param stage - stage object from the CheckersMenu class
+     * @link{ com.example.checkers.CheckersMenu }
+     */
     public void initApp(CheckersBoard board, Stage stage) { // Abstract Factory
         listenSocket();
         receiveInfoFromServer();
         board.sendMsgToServer(socket);
-        // Creating the ui(board, pieces, squares, enabling the pieces to move)
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -288,6 +344,10 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
         playerMethod(player);
     }
 
+    /**
+     * Method for synchronization and calling the method to handle the response from the server
+     * @param player - current player which has move
+     */
     public void playerMethod(int player) {
         while(true) {
             synchronized(this) { // this is monitor object

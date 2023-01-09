@@ -40,6 +40,7 @@ class CheckersAppTest {
     CheckersApp.squares[3][4].setPiece(pieceBlack3);
     CheckersApp.squares[1][6].setPiece(pieceBlack4);
   }
+
   @BeforeEach
   public void setServer() {
     server = new CheckersServer();
@@ -81,8 +82,6 @@ class CheckersAppTest {
     app2 = new CheckersApp();
     board = new PolishBoard();
     board.createBoard();
-
-
     new Thread(()-> {
       app.initApp(board, null);
     }).start();
@@ -90,10 +89,7 @@ class CheckersAppTest {
       app2.initApp(board, null);
     }).start();
 
-
     assertNotNull(app.PieceSize);
-    System.out.println(board.getSquares());
-    System.out.println(board.getBlackPieces());
   }
 
   @Test

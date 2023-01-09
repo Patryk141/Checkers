@@ -12,17 +12,32 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+/**
+ * Class opening the application menu and initializing whole app
+ * @author Barłomiej Puchała Patryk Piskorski
+ */
 public class CheckersMenu extends Application {
 
   private static Stage newStage;
+  /**
+   * Board obj depending on the game type
+   */
   private CheckersBoard board;
   private CheckersApp app;
 
+  /**
+   * @param stage
+   * @throws Exception
+   */
   @Override
   public void start(Stage stage) throws Exception {
     initMenu();
   }
 
+  /**
+   * Method creting the menu layout, buttons and adding event handlers to these buttons for generating specific board to each game
+   * @return root element which builds the whole menu
+   */
   private HBox createMenu() {
     HBox root = new HBox();
     root.setPrefSize(600, 600);
@@ -88,6 +103,9 @@ public class CheckersMenu extends Application {
     return root;
   }
 
+  /**
+   * Method creating the stage and setting the scene
+   */
   public void initMenu() {
     newStage = new Stage();
     Scene scene = new Scene(createMenu());

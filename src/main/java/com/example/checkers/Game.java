@@ -8,6 +8,10 @@ import java.util.ArrayList;
 
 import static java.lang.Integer.parseInt;
 
+/**
+ * Server Class for sending the response to the clients
+ * @author Patryk Piskorski Bartłomiej Puchała
+ */
 public class Game extends CheckersApp implements Runnable {
 
   private Socket firstPlayer;
@@ -31,6 +35,9 @@ public class Game extends CheckersApp implements Runnable {
     this.secondPlayer = secondPlayer;
   }
 
+  /**
+   * Method for setting the squares object and initializing the GameRules instance
+   */
   public void createBoard() {
     squares = new Square[size][size];
 
@@ -60,6 +67,14 @@ public class Game extends CheckersApp implements Runnable {
     rules.setNumberOfPieces(blackPieces, whitePieces);
   }
 
+  /**
+   * Method for generating the response and sending it to the clients
+   * Method is calling the methods from the GameRules interface object
+   * @param in - stream for reading the data from the client
+   * @param out_first - stream for sending the data to the first client
+   * @param out_second - stream for sending the data to the second client
+   * @param nextTurn - nextTurn of the game
+   */
   public void generateResponse(BufferedReader in, PrintWriter out_first, PrintWriter out_second, int nextTurn) {
     try {
       line = in.readLine();
@@ -147,6 +162,9 @@ public class Game extends CheckersApp implements Runnable {
     }
   }
 
+  /**
+   * Thread method for initializing streams for each client, sending data to clients of their number, getting the data from the board and sending response to client
+   */
   @Override
   public void run() {
       try {
@@ -166,8 +184,11 @@ public class Game extends CheckersApp implements Runnable {
         out_second.println("2");
 
         String msgFromBoard = in_first.readLine();
-        msgFromBoard = in_second.readLine();
-        String[] info = msgFromBoard.split(" ");
+        String msgFromBoard_ = in_second.readLine();
+        if(!msgFromBoard.equals(msgFromBoard_)) {
+          throw new Exception("Not equal game types");
+        }
+        String[] info = msgFromBoard_.split(" ");
         size = parseInt(info[0]);
         gameType = info[1];
         createBoard();
@@ -187,6 +208,8 @@ public class Game extends CheckersApp implements Runnable {
 
       } catch (IOException ex) {
         System.err.println("ex");
+      } catch (Exception e) {
+        e.printStackTrace();
       }
   }
 }

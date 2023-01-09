@@ -5,6 +5,12 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 
+/**
+ * Class initializing the server which listens on specific port and waits for 2 clients to connect
+ * Class for creating the game object with 2 connected to server clients and starting the thread for this class
+ * @author Bartłomiej Puchała
+ * @link{com.example.checkers.Game}
+ */
 public class CheckersServer {
 
   public static void main(String[] args) {

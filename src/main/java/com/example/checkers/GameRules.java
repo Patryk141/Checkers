@@ -1,7 +1,12 @@
 package com.example.checkers;
 
+/**
+ * Interface with the methods that server is checking
+ * @author Patryk Piskorski Bartłomiej Puchała
+ * @link{com.example.checkers.RussianGameRules}
+ * @link{com.example.checkers.ClassicGameRules}
+ */
 public interface GameRules {
-
   String availableMoves(Piece piece);
   void availablePiece(int turn, int size, Square[][] squares);
   boolean checkIfMatted(int oldX, int oldY, int newX, int newY);
@@ -15,7 +20,5 @@ public interface GameRules {
   int getWhitePieces();
   void setAvailablePiece(String availablePiece);
   void setObligatoryPiece(String obligatoryPiece);
-  void setBlackPieces(int blackPieces);
-  void setWhitePieces(int whitePieces);
 
 }

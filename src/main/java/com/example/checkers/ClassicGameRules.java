@@ -29,16 +29,6 @@ public class ClassicGameRules implements GameRules {
   }
 
   @Override
-  public void setBlackPieces(int blackPieces) {
-    this.blackPieces = blackPieces;
-  }
-
-  @Override
-  public void setWhitePieces(int whitePieces) {
-    this.whitePieces = whitePieces;
-  }
-
-  @Override
   public String getAvailablePiece() {
     return availablePiece;
   }
@@ -266,13 +256,12 @@ public class ClassicGameRules implements GameRules {
             }
             if(availableMoves(newPiece).contains("kill")) {
               matCounter =  howManyMat(newPiece, 0, -1, -1);
-//              System.out.println("Ilosc bic: " + matCounter);
               if (matCounter > maxMatCounter) {
                 obligatoryPiece = " ( " + i + " " + j + " )";
                 maxMatCounter = matCounter;
               } else if (matCounter == maxMatCounter) {
                 obligatoryPiece = obligatoryPiece + " ( " + i + " " + j + " )";
-              }//Koniec
+              }
             }
           }
         }

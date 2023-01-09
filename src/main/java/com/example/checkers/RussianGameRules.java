@@ -2,6 +2,10 @@ package com.example.checkers;
 
 import java.util.ArrayList;
 
+/**
+ * Class including methods specifying rules of the russian checkers
+ * @author Bartłomiej Puchała Patryk Piskorski
+ */
 public class RussianGameRules implements GameRules {
 
   private String availablePiece, obligatoryPiece;
@@ -25,17 +29,6 @@ public class RussianGameRules implements GameRules {
     this.obligatoryPiece = obligatoryPiece;
   }
 
-  @Override
-  public void setBlackPieces(int blackPieces) {
-    this.blackPieces = blackPieces;
-  }
-
-  @Override
-  public void setWhitePieces(int whitePieces) {
-    this.whitePieces = whitePieces;
-  }
-
-
   public String getAvailablePiece() {
     return availablePiece;
   }
@@ -57,6 +50,11 @@ public class RussianGameRules implements GameRules {
     this.whitePieces = whitePieces;
   }
 
+  /**
+   * Method for checking moves of the piece and a king
+   * @param piece - checked piece
+   * @return specific String message depending on the move
+   */
   @Override
   public String availableMoves(Piece piece) {
     String moves = "";
@@ -234,6 +232,12 @@ public class RussianGameRules implements GameRules {
     return movesKill;
   }
 
+  /**
+   * Method is calling the method to check possible moves of the piece and is setting specific values based on return
+   * @param turn - current turn in the game
+   * @param size - size of the board
+   * @param squares - squares object
+   */
   @Override
   public void availablePiece(int turn, int size, Square[][] squares) {
     setSquares(squares);
@@ -267,6 +271,15 @@ public class RussianGameRules implements GameRules {
     }
   }
 
+  /**
+   * Method for checking if piece matted the other one
+   * Method for reducing the white and blackPieces if they were matted
+   * @param oldX - old x coordinate of piece
+   * @param oldY - old y coordinate of piece
+   * @param newX - new x coordinate of moved piece
+   * @param newY - new y coordinate of moved piece
+   * @return true if there was a mat, false otherwise
+   */
   @Override
   public boolean checkIfMatted(int oldX, int oldY, int newX, int newY) {
     while (oldX != newX) {
@@ -294,6 +307,14 @@ public class RussianGameRules implements GameRules {
     return false;
   }
 
+  /**
+   * Method for checking if the piece move was valid(there is no other piece on board) and updating the squares
+   * @param oldX - old x coordinate of piece
+   * @param oldY - old y coordinate of piece
+   * @param newX - new x coordinate of moved piece
+   * @param newY - new y coordinate of moved piece
+   * @return true if the move was valid, false otherwise
+   */
   @Override
   public boolean checkMove(int oldX, int oldY, int newX, int newY) {
     if ((newX + newY) % 2 == 1) {
@@ -316,11 +337,20 @@ public class RussianGameRules implements GameRules {
     return false;
   }
 
+  /**
+   * Method for changing the piece to king
+   * @param x - x coordinate of the piece
+   * @param y - y coordinate of the piece
+   */
   @Override
   public void promotion(int x, int y) {
     squares[x][y].getPiece().setKing();
   }
 
+  /**
+   * @param type - type of piece
+   * @return true if all the pieces of type are blocked(no possible move), false otherwise
+   */
   @Override
   public boolean checkBlockedPieces(PieceType type) {
     ArrayList<Piece> pieceArr = new ArrayList<Piece>();

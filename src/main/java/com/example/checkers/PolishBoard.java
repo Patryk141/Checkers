@@ -8,6 +8,10 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 
+/**
+ * Class for creating board of polish version, sending msg to server about size and rules
+ * @author Bartłomiej Puchała Patryk Piskorski
+ */
 public class PolishBoard implements CheckersBoard {
 
   private static int Size = 10;
@@ -17,6 +21,10 @@ public class PolishBoard implements CheckersBoard {
   private int i, j;
   private Piece piece;
 
+  /**
+   * Method for creating the pane
+   * @return Pane element which creates the whole board
+   */
   @Override
   public Pane createBoard() {
     Pane root = new Pane();
@@ -51,6 +59,10 @@ public class PolishBoard implements CheckersBoard {
     return root;
   }
 
+  /**
+   * Method for sending data to server(size and gameRules)
+   * @param socket - current client socket
+   */
   @Override
   public void sendMsgToServer(Socket socket) {
     try {

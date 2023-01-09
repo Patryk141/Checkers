@@ -3,8 +3,10 @@ package com.example.checkers;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-import java.io.Serializable;
-
+/**
+ * Square class crating the rectangles
+ * @author Bartłomiej Puchała Patryk Piskorski
+ */
 public class Square extends Rectangle {
     private Piece piece = null;
 
@@ -16,6 +18,11 @@ public class Square extends Rectangle {
         this.piece = piece;
     }
 
+    /**
+     * @param x - x position of the square
+     * @param y - y position of the square
+     * @param type - type of the field
+     */
     public Square(int x, int y, int type) {
         setWidth(CheckersApp.PieceSize);
         setHeight(CheckersApp.PieceSize);
