@@ -1,6 +1,5 @@
 package com.example.checkers;
 
-import javafx.stage.Stage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

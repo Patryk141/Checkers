@@ -7,8 +7,6 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class GameTest {
     Game game;
     PrintWriter out1, out2;

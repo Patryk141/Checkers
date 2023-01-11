@@ -1,10 +1,7 @@
 package com.example.checkers;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.net.*;
 import java.io.*;
@@ -16,7 +13,6 @@ public class BoardTest {
   CheckersBoard board;
   ArrayList<Piece> blackPieces;
   ArrayList<Piece> whitePieces;
-  ServerSocket serverSocket;
   Game game;
   PrintWriter out1, out2;
   BufferedReader in1, in2;
