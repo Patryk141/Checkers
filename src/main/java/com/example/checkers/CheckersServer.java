@@ -1,8 +1,13 @@
 package com.example.checkers;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+
+import static java.lang.Boolean.parseBoolean;
 
 
 /**
@@ -12,7 +17,6 @@ import java.net.Socket;
  * @link{com.example.checkers.Game}
  */
 public class CheckersServer {
-
   public static void main(String[] args) {
     try (ServerSocket serverSocket = new ServerSocket(4000)) {
 
@@ -21,18 +25,28 @@ public class CheckersServer {
       while(true) {
         Socket firstClient = serverSocket.accept();
         System.out.println("First client connected!");
-        System.out.println("Waiting for second player to connect");
+        InputStream input_first = firstClient.getInputStream();
+        BufferedReader in_first = new BufferedReader(new InputStreamReader(input_first));
+        String data = in_first.readLine();
 
-        Socket secondClient = serverSocket.accept();
-        System.out.println("Second client connected");
-
-        Game game = new Game(firstClient, secondClient);
-        Thread gameThread = new Thread(game);
-        gameThread.start();
+        System.out.println(data);
+        if (parseBoolean(data)) {
+          System.out.println("Waiting for second player to connect");
+          Socket secondClient = serverSocket.accept();
+          System.out.println("Second client connected");
+          Game game = new Game(firstClient, secondClient);
+          Thread gameThread = new Thread(game);
+          gameThread.start();
+        } else {
+          GameBot gameBot = new GameBot(firstClient);
+          Thread gameThread = new Thread(gameBot);
+          gameThread.start();
+        }
+      }
 
         // Walidacja: Tylko 2 klientów może się połączyć z serwerem
 
-      }
+//      }
 
     } catch(IOException e) {
       System.out.println("I/O error: " + e);

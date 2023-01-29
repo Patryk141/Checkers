@@ -185,6 +185,11 @@ public class Game extends CheckersApp implements Runnable {
 
         String msgFromBoard = in_first.readLine();
         String msgFromBoard_ = in_second.readLine();
+        System.out.println(msgFromBoard);
+        System.out.println(msgFromBoard_);
+        if(msgFromBoard_.equals("true")){
+          msgFromBoard_ = in_second.readLine();
+        }
         if(!msgFromBoard.equals(msgFromBoard_)) {
           throw new Exception("Not equal game types");
         }

@@ -19,14 +19,14 @@ class CheckersServerTest {
         app = new CheckersApp();
         new Thread(() -> {
             try {
-                app.initApp(board, null);
+                app.initApp(board, null, false);
             } catch(Exception e) {
                 System.out.println(e);
             }
         }).start();
         new Thread(() -> {
             try {
-                app.initApp(board, null);
+                app.initApp(board, null, false);
             } catch(Exception e) {
                 System.out.println(e);
             }

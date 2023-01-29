@@ -12,6 +12,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+
 /**
  * Class opening the application menu and initializing whole app
  * @author Barłomiej Puchała Patryk Piskorski
@@ -24,6 +28,11 @@ public class CheckersMenu extends Application {
    */
   private CheckersBoard board;
   private CheckersApp app;
+  private static boolean Bot = true;
+
+  public static boolean isBot() {
+    return Bot;
+  }
 
   /**
    * @param stage
@@ -45,6 +54,7 @@ public class CheckersMenu extends Application {
     Button game1 = new Button("Warcaby rosyjskie"); // całe zaimplementowane
     Button game2 = new Button("Warcaby klasyczne");
     Button game3 = new Button("Warcaby polskie");
+    Button gameBot = new Button("Gra z botem");
 
     EventHandler<MouseEvent> russianHandler = new EventHandler<MouseEvent>() {
       @Override
@@ -53,7 +63,7 @@ public class CheckersMenu extends Application {
         Thread th = new Thread(()-> {
           try {
             board = new RussianBoard();
-            app.initApp(board, newStage);
+            app.initApp(board, newStage, Bot);
           } catch(Exception e) {
             System.out.println(e);
           }
@@ -69,7 +79,7 @@ public class CheckersMenu extends Application {
         Thread th = new Thread(()-> {
           try {
             board = new ClassicBoard();
-            app.initApp(board, newStage);
+            app.initApp(board, newStage, Bot);
           } catch(Exception e) {
             System.out.println(e);
           }
@@ -84,7 +94,7 @@ public class CheckersMenu extends Application {
         Thread th = new Thread(()-> {
           try {
             board = new PolishBoard();
-            app.initApp(board, newStage);
+            app.initApp(board, newStage, Bot);
           } catch(Exception e) {
             System.out.println(e);
           }
@@ -92,12 +102,19 @@ public class CheckersMenu extends Application {
         th.start();
       }
     };
+    EventHandler<MouseEvent> gameWithBot = new EventHandler<MouseEvent>() {
+      @Override
+      public void handle(MouseEvent mouseEvent) {
+        Bot = false;
+      }
+    };
 
     game1.addEventFilter(MouseEvent.MOUSE_CLICKED, russianHandler); // git
     game2.addEventFilter(MouseEvent.MOUSE_CLICKED, classicHandler);
     game3.addEventFilter(MouseEvent.MOUSE_CLICKED, polishHandler);
+    gameBot.addEventHandler(MouseEvent.MOUSE_CLICKED, gameWithBot);
 
-    root.getChildren().addAll(game1, game2, game3);
+    root.getChildren().addAll(game1, game2, game3, gameBot);
     root.setAlignment(Pos.CENTER);
     root.setSpacing(15);
     return root;

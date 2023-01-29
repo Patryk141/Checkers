@@ -309,10 +309,13 @@ public class CheckersApp extends Application implements Runnable, EventHandler<M
      * @param stage - stage object from the CheckersMenu class
      * @link{ com.example.checkers.CheckersMenu }
      */
-    public void initApp(CheckersBoard board, Stage stage) { // Abstract Factory
+    public void initApp(CheckersBoard board, Stage stage, boolean bot) { // Abstract Factory
         listenSocket();
+        out.println(bot);
         receiveInfoFromServer();
         board.sendMsgToServer(socket);
+
+
         Platform.runLater(new Runnable() {
             @Override
             public void run() {

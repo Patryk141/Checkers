@@ -81,10 +81,10 @@ class CheckersAppTest {
     board = new PolishBoard();
     board.createBoard();
     new Thread(()-> {
-      app.initApp(board, null);
+      app.initApp(board, null, false);
     }).start();
     new Thread(()-> {
-      app2.initApp(board, null);
+      app2.initApp(board, null, false);
     }).start();
 
     assertNotNull(app.PieceSize);
